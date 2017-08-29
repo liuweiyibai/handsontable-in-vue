@@ -390,10 +390,10 @@ export default {
           let arr = [];
           for (let i = 0; i < one.length; i++) {
             for (let j = 0; j < one[i].length; j++) {
-              if(typeof one[i][j] === 'string'){
+              if (typeof one[i][j] === 'string') {
                 _this.openNotice();
               }
-              console.log('不是数字'+isNaN(one[i][j]));
+              console.log('这是数字' + !isNaN(one[i][j]));
               arr.push(one[i][j]);
             }
           }
@@ -494,6 +494,8 @@ div {
 
 
 
+
+
 /*定义滚动条轨道 内阴影+圆角*/
 
 ::-webkit-scrollbar-track {
@@ -501,6 +503,8 @@ div {
   border-radius: 10px;
   background-color: #F5F5F5;
 }
+
+
 
 
 
