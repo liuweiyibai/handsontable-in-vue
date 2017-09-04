@@ -1,64 +1,21 @@
 <template>
   <div id="Mheader">
-    <ul class="header-nav">
-      <!-- 导航1，开始 -->
-      <li class="header-nav-common header-nav-begin">
-        <el-tooltip class="item" effect="dark" content="从这里开始" placement="right">
-          <router-link tag="a" to="/start" class="a-link a-link-common">
-            <span class="iconfont top">&#xe669;</span>
-            <span class="bottom">开始</span>
-          </router-link>
-        </el-tooltip>
-      </li>
-      <!-- 导航2，到个人中心 -->
-      <li class="header-nav-common header-nav-minespace">
-        <router-link to="user-mine" class="a-link a-link-common">
-          <span class="iconfont top">&#xe621;</span>
-          <span class="bottom">我的</span>
-        </router-link>
-      </li>
-      <!-- 导航3，到新建数据 -->
-      <li class="header-nav-common header-nav-uploaddata">
-        <router-link to="upload-data" class="a-link a-link-common">
-          <span class="iconfont top">&#xe614;</span>
-          <span class="bottom">新建数据</span>
-        </router-link>
-      </li>
-      <!-- 导航4，到操作日志 -->
-      <li class="header-nav-common header-nav-opeatedate">
-        <router-link to="upload-data" class="a-link a-link-common">
-          <span class="iconfont top">&#xe676;</span>
-          <span class="bottom">操作日志</span>
-        </router-link>
-      </li>
-       <li class="header-nav-common header-nav-opeatedate">
-        <router-link to="table" class="a-link a-link-common">
-          <span class="iconfont top">&#xe676;</span>
-          <span class="bottom">工作表</span>
-        </router-link>
-      </li>
-      <!-- 下面三个导航部分 -->
-      <!-- 导航5，设置菜单-->
-      <li class="header-nav-common header-nav-bottom1">
-        <router-link to="setting" class="a-link a-link-common">
-          <span class="iconfont top">&#xe600;</span>
-          <span class="bottom">设置</span>
-        </router-link>
-      </li>
-      <li class="header-nav-common header-nav-bottom2">
-        <router-link to="upload-data" class="a-link a-link-common">
-          <span class="iconfont top">&#xe657;</span>
-          <span class="bottom">账户名</span>
-        </router-link>
-      </li>
-      <li class="header-nav-common header-nav-bottom3">
-        <router-link to="upload-data" class="a-link a-link-common">
-          <span class="iconfont top">&#xe6af;</span>
-          <span class="bottom">帮助</span>
-        </router-link>
-      </li>
-
-    </ul>
+    <nav class="default-nav">
+      <div class="nav-left">
+        <h1>LOGO</h1>
+      </div>
+      <div class="nav-right">
+        <el-menu :default-active="activeIndex2" class="el-menu-demo nav-right-list" mode="horizontal" @select="handleSelect">
+          <el-submenu index="2">
+            <template slot="title">我的工作台</template>
+            <el-menu-item index="2-1">选项1</el-menu-item>
+            <el-menu-item index="2-2">选项2</el-menu-item>
+            <el-menu-item index="2-3">选项3</el-menu-item>
+          </el-submenu>
+          <el-menu-item index="1">帮助</el-menu-item>
+        </el-menu>
+      </div>
+    </nav>
   </div>
 </template>
 <script>
@@ -67,75 +24,39 @@ export default {
 </script>
 
 <style scoped>
-.header-nav li {
-  line-height: 1;
+.default-nav {
   box-sizing: border-box;
-}
-
-#Mheader {
+  height: 60px;
+  width: 100%;
+  border-bottom: 1px solid #465463;
   position: fixed;
   top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 2;
-  background-color: #172a3d;
-  width: 50px;
-  color: #fff;
+  background-color: #192B3C;
+  z-index: 600;
+  min-width: 1200px;
+  padding: 0 10px;
 }
 
-.header-nav-common {
-  text-align: center;
-  width: 100%;
-  padding: 10px 0 5px 0;
-}
-.header-nav-begin{
-  padding-top: 0;
-}
-.a-link {
-  display: block;
-  width: 100%;
-  height: 100%;
-  padding-top: 10px;
-  color: #fff;
+.nav-left {
+  font-size: 28px;
+  color: #0D6799;
+  line-height: 60px;
+  text-align: left;
+  padding-left: 10px;
+  float: left;
+  cursor: pointer;
 }
 
-.a-link-common:hover {
-  background-color: hsla(0, 0%, 100%, .1);
+.nav-right {
+  text-align: right;
+  padding: 0 70px;
+  width: 70%;
+  float: right;
 }
 
-.a-link-common .top {
-  display: block;
-  width: 25px;
-  height: 24px;
-  margin: 0 auto
+.nav-right-list {
+  background-color: inherit;
+  display: inline-block;
 }
-
-.a-link-common .bottom {
-  overflow: hidden;
-  margin-top: 4px;
-  display: block;
-  text-align: center;
-  font-size: 12px;
-  transform: scale(.83333);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, .2);
-}
-
-.header-nav-bottom1 {
-  position: absolute;
-  bottom: 125px;
-}
-
-.header-nav-bottom2 {
-  position: absolute;
-  bottom: 65px;
-}
-
-.header-nav-bottom3 {
-  position: absolute;
-  bottom: 5px;
-}
-/* .router-link-active{
-  background-color: hsla(0,0%,100%,.2);
-} */
 </style>
 

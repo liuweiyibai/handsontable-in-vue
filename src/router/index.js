@@ -33,12 +33,19 @@ const setting = (resolve) => {
   })
 }
 
+const Form = (resolve) => {
+  import ('@/components/Form/Form').then((module) => {
+    resolve(module);
+  })
+}
+
+
 export default new Router({
   mode: 'history',
   routes: [{
       path: "/",
       name: 'root',
-      component: start
+      component: Form
     },
     {
       path: '/upload-data',

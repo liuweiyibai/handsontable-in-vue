@@ -103267,21 +103267,39 @@
 </head>
 <!--[if lte IE 8]>
   这是ie8
-  <body class='low'>
+  <body class='lower'>
   <![endif]-->
   <!--[if (gt IE 8)|!(IE)]>
   <body>
   <![endif]-->
   <!-- fallback for browsers under ie8 -->
   <!--[if lte IE 8]>
-    <div id="lowie-main">
+    <div id="lower-main">
       <img alt="ie tip" src="http://echarts.baidu.com/images/forie.png" />
     </div>
     这是ie
     <![endif]-->
-
-<body style='width:100%;height:100%;overflow:hidden;'>
+    <style >
+      .lower #lower-main{
+        display: block;
+        z-index: 999;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        padding: 200px 0 100px;
+        background-color: #2a3c54
+      }
+      .lower #lower-main img {
+        display: block;
+        width: 60%;
+        margin: 0 auto
+      }
+    </style>
+<body style='width:100%;height:100%;overflow:auto;'>
     <div id="app"></div>
 </body>
+  
 
 </html>

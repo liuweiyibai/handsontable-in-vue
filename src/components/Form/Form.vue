@@ -1,74 +1,107 @@
 <template>
-  <div id="FormComponent" class="container-app">
-    <div id="j-FormCompent">
-      <div class="left-wrapper" style="overflow:auto">
-        <div class="left-wrapper-top">
-          <div class="table-name">
-            <span style="float:left">test</span>
-            <router-link to="upload-data" style="float:right;margin-right:3px;color:#7DE0EF;font-size:10px;">新建数据表</router-link>
+  <aside id="main">
+    <div class="left-com">
+      <div class="left-com-top">
+        <span class="name">数据表</span>
+        <el-tooltip class="item" effect="dark" content="新建数据表" placement="bottom">
+          <i class="iconfont">&#xe63b;</i>
+        </el-tooltip>
+      </div>
+      <div class="left-com-bottom"></div>
+    </div>
+    <div class="right-com">
+      <div class="right-com-top">
+        <div class="right-com-top-tab">
+          <div class="right-tab">
+            <div data-type="button" class="data-button btn1">表格</div>
+            <div data-type="button" class="data-button btn2">图表</div>
+            <div data-type="button" class="data-button btn3">重置数据</div>
           </div>
-          <div class="title-bar">
-            <span class="text">维度</span>
-            <span class="title-bar-input" v-show="!search_show">
-              <input type="text" placeholder="请输入关键字">
-            </span>
-            <span class="title-bar-search">
-              <i class="el-icon-search"></i>
-            </span>
-          </div>
-          <div class="tree-ul">
-            <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+          <div class="left-tab">
+            <el-tooltip class="item" effect="dark" content="保存" placement="bottom">
+              <span class="icon-btn">
+                <i class="iconfont">&#xe634;</i>
+              </span>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="导出" placement="bottom">
+              <span class="icon-btn">
+                <i class="iconfont">&#xe639;</i>
+              </span>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="分享" placement="bottom">
+              <span class="icon-btn">
+                <i class="iconfont">&#xe608;</i>
+              </span>
+            </el-tooltip>
           </div>
         </div>
+        <div class="right-com-top-ctl">
+          <el-tooltip class="item" effect="dark" content="插入行" placement="bottom">
+            <span class="icon-btn">
+              <i class="iconfont">&#xe600;</i>
+            </span>
+          </el-tooltip>
 
-        <div class="left-wrapper-bottom">
-          <div class="title-bar">
-            <span class="text">度量</span>
-            <span class="title-bar-input" v-show="!search_show">
-              <input type="text" placeholder="请输入关键字">
+          <el-tooltip class="item" effect="dark" content="插入列" placement="bottom">
+            <span class="icon-btn">
+              <i class="iconfont">&#xe6d2;</i>
             </span>
-            <span class="title-bar-search">
-              <i class="el-icon-search"></i>
+          </el-tooltip>
+
+          <el-tooltip class="item" effect="dark" content="删除行" placement="bottom">
+            <span class="icon-btn">
+              <i class="iconfont">&#xe6d0;</i>
             </span>
-          </div>
-          <div class="tree-ul">
-            <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-          </div>
+          </el-tooltip>
+
+          <el-tooltip class="item" effect="dark" content="删除列" placement="bottom">
+            <span class="icon-btn">
+              <i class="iconfont">&#xe6d1;</i>
+            </span>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="冻结行" placement="bottom">
+            <span class="icon-btn">
+              <i class="iconfont">&#xe65d;</i>
+            </span>
+          </el-tooltip>
+          <span class="iconfont icon">&#xe601;</span>
+           <el-tooltip class="item" effect="dark" content="合并单元格" placement="bottom">
+            <span class="icon-btn">
+              <i class="iconfont">&#xe60e;</i>
+            </span>
+          </el-tooltip>
+
+           <el-tooltip class="item" effect="dark" content="拆分单元格" placement="bottom">
+            <span class="icon-btn">
+              <i class="iconfont">&#xe60d;</i>
+            </span>
+          </el-tooltip>
+           <el-tooltip class="item" effect="dark" content="求和" placement="bottom">
+            <span class="icon-btn">
+              <i class="iconfont">&#xe643;</i>
+            </span>
+          </el-tooltip>
         </div>
       </div>
-      <div class="right-wrapper" style="overflow-x:hidden;overflow-y:scroll;">
-        <div class="right-wrapper-control">
-          <div class="top">
-            <div class="fl" @click="tabChange(1)" :class="{'active':currentIndex===1}">开始</div>
-            <div class="fl" @click="tabChange(2)" :class="{'active':currentIndex===2}">文本</div>
-            <div class="fl" @click="tabChange(3)" :class="{'active':currentIndex===3}">表格</div>
-            <div class="name">文件名</div>
-          </div>
-          <div class="bottom">
-            <div class="bottom1" v-show="currentIndex===1">
-              <button ref="btn111">点击载入数据</button>
-              <button id="download">下载</button>
-              <button id="add">求和</button>
-              <input type="text" id="search_ipt">
-              <button id="changeSetting">修改配置</button>
-            </div>
-            <div v-show="currentIndex===2">文本</div>
-            <div v-show="currentIndex===3">表格</div>
-          </div>
+      <div class="right-com-main">
+        <div class="fx-control">
+          <div class="fx-left"></div>
+          <input type="text" size="200" style="width:400px">
         </div>
-        <div class="right-wrapper-table">
-          <div class="fx-control">
-            <div class="fx-left"></div>
-            <input type="text" size="200" style="width:400px">
-          </div>
-          <div id="example" style="height:calc(87vh - 26px);width:100%;overflow:hidden;margin-bottom:-2px;"></div>
+        <div class="main-table" id="example"></div>
+      </div>
+      <div class="right-com-bottom">
+        <span class="el-icon-caret-left"></span>
+        <span class="el-icon-caret-right"></span>
+        <div class="text" style="display:inline-block">
+          第一页
         </div>
       </div>
     </div>
-  </div>
+  </aside>
 </template>
 <script>
-import '../assets/js/lib/handsontable.full.min.css'
+import '../../assets/js/lib/handsontable.full.min.css'
 export default {
   data() {
     return {
@@ -79,7 +112,7 @@ export default {
         colHeaders: true,
         rowHeaders: true,//行表头
         startRows: 30,
-        startCols: 30,
+        startCols: 15,
         search: true,
         fixedRowsBottom: 2,
         autoWrapRow: true, //自动换行
@@ -91,42 +124,6 @@ export default {
       arr: [],
       doms: "",
       this_cell: null,
-      data: [{
-        label: '地理位置',
-        children: [{
-          id: 9,
-          label: '省市'
-        }, {
-          id: 10,
-          label: "城市"
-        }]
-      }, {
-        label: '一级 2',
-        children: [{
-          label: '二级 2-1',
-          children: [{
-            label: '三级 2-1-1'
-          }]
-        }, {
-          label: '二级 2-2',
-          children: [{
-            label: '三级 2-2-1'
-          }]
-        }]
-      }, {
-        label: '一级 3',
-        children: [{
-          label: '二级 3-1',
-          children: [{
-            label: '三级 3-1-1'
-          }]
-        }, {
-          label: '二级 3-2',
-          children: [{
-            label: '三级 3-2-1'
-          }]
-        }]
-      }],
       defaultProps: {
         children: 'children',
         label: 'label'
@@ -180,10 +177,6 @@ export default {
         this.$message.error(text);
       }
 
-    },
-    //tab切换方法
-    tabChange(index) {
-      this.currentIndex = index;
     },
     // 清空列表
     clear() {
@@ -324,13 +317,13 @@ export default {
         colHeaders: true,// 列表头
         rowHeaders: true,//行表头
         stretchH: 'all', // 是否
-        startRows: 30,
-        startCols: 30,
-        minCols: 30,
-        minRows: 30,
+        startRows: 15,
+        startCols: 26,
+        minCols: 26,
+        minRows: 20,
         manualColumnFreeze: true,
         autoColumnSize: true,
-        fixedRowsBottom: 2,
+        fixedRowsBottom: 1,
         search: true,// 启用搜索
         autoWrapRow: true, //自动换行
         copyPaste: true,
@@ -470,7 +463,7 @@ export default {
         console.log(_this.hot.getSettings()); //获取对象的配置信息
         console.log("总过选中了" + _this.doms.length + '个数字');
         let arr = _this.arr,
-            one;
+          one;
         for (let i = 0; i < arr.length; i++) {
           if (!isNaN(arr[i]) === false) {
             _this.openNotice('error', '无法对非数字进行计算！');
@@ -478,12 +471,12 @@ export default {
           }
         }
         console.log(arr);
-        
-        for(let i = 0;i<arr.length;i++){
+
+        for (let i = 0; i < arr.length; i++) {
 
         }
 
-       
+
         // for ( k in this.arr){
         //     console.log(k);
         // }
@@ -495,193 +488,149 @@ export default {
         // _this.zonghe = eval(_this.arr.join("+"));
         // // console.log(_this.zonghe);
       })
-    },
-    handleNodeClick() {
-      console.log('我是elementUi中tree的事件')
     }
   }
 }
 </script>
-
-
 <style scoped>
-div {
-  box-sizing: border-box;
-}
-
-::-webkit-scrollbar {
-  width: 5px;
-  height: 16px;
-  background-color: #F5F5F5;
-}
-
-
-/*定义滚动条轨道 内阴影+圆角*/
-
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
-  background-color: #F5F5F5;
-}
-
-
-
-
-
-
-/*定义滑块 内阴影+圆角*/
-
-::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
-  background-color: #C5C5C5;
-}
-
-#j-FormCompent {
-  width: 100%;
-}
-
-.left-wrapper {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 50px;
-  width: 200px;
-  height: 100vh;
-  background-color: rgba(255, 255, 255, .9);
-}
-
-.left-wrapper .left-wrapper-top {
-  display: inline;
-}
-
-.left-wrapper-top .table-name {
-  padding: 0 0 0 5px;
-  height: 30px;
-  min-height: 30px;
-  line-height: 30px;
-  color: #666;
-  font-size: 14px;
-}
-
-.title-bar {
+#main {
+  height: calc(100vh - 60px);
+  margin: 60px auto;
   position: relative;
-  height: 30px;
-  min-height: 30px;
-  line-height: 26px;
-  background: rgba(0, 0, 0, .1);
-  padding: 0 5px 0 10px;
 }
 
-.title-bar .text {
-  display: inline;
-  line-height: inherit;
-  font-weight: 700;
-  font-size: 12px;
-}
-
-.title-bar .title-bar-input {
-  display: inline-block;
-  width: calc(100% - 60px);
-}
-
-.title-bar .title-bar-search {
-  position: absolute;
-  right: 5px;
-  top: 2px;
-}
-
-.title-bar .title-bar-input input {
-  height: 20px;
-  min-height: 20px;
-  line-height: 20px;
-  border: none;
-  padding: 0 3px;
-  width: 100%;
-  border-radius: 2px;
-  font-size: 12px;
-}
-
-.tree-ul {
-  padding: 10px 10px 10px 17px;
-}
-
-.tree-ul .el-tree {
-  cursor: default;
-  background: #fff;
-  border: none !important;
-}
-
-.right-wrapper {
+.left-com {
   position: fixed;
-  right: 0;
-  width: calc(100% - 250px);
-  height: 100%;
+  top: 60px;
+  left: 0;
   bottom: 0;
+  height: 100%;
+  width: 20%;
 }
 
-
-
-
-
-.right-wrapper-control {
-  min-height: 80px;
-  height: 13vh;
-  min-height: 80px;
+.left-com-top {
+  box-sizing: border-box;
   width: 100%;
-}
-
-.right-wrapper-control .top {
-  height: 30px;
-  min-height: 30px;
-  background: #F9F9F9;
-  font-size: 12px;
-  border-left: 1px solid #ccc;
-  border-bottom: 1px solid #DDD;
-  padding-left: 30px;
-  margin: 0;
-}
-
-.right-wrapper-control .top div.fl {
-  width: 50px;
-  height: inherit;
-  text-align: center;
-  display: inline-block;
-  line-height: 30px;
+  height: 47px;
+  padding: 0 20px;
+  line-height: 47px;
   font-size: 14px;
-  color: #333;
-  border: none;
-  border-radius: 0;
-  padding: 0;
+  color: #000000;
+  background-color: #FAFDFF;
+  border-bottom: 2px solid #C8C9CC;
+}
+
+.left-com-top span,
+.left-com-top i {
+  display: inline-block;
+}
+
+.left-com-top span {
+  float: left;
+}
+
+.left-com-top i {
+  float: right;
+  color: #4BB8FF;
   cursor: pointer;
 }
 
-div.active {
-  background: #FFF;
-  color: #333;
-  margin-bottom: -1px !important;
-}
-
-.right-wrapper-control .top div.name {
-  display: inline-block;
-  line-height: 30px;
-  margin-left: 30%;
-}
-
-.right-wrapper-control .bottom {
-  height: 50px;
-  border-bottom: 1px solid #DDD;
-  border-left: 1px solid #ccc;
-  overflow: visible;
-}
-
-.right-wrapper-table {
+.left-com-bottom {
+  height: calc(100vh - 47px);
   width: 100%;
-  height: 87vh;
+  background-color: #FAFDFF;
 }
 
+.right-com {
+  position: fixed;
+  top: 60px;
+  right: 0;
+  bottom: 0;
+  width: 80%;
+}
 
-.right-wrapper-table .fx-control {
+.right-com-top {
+  width: 100%;
+  height: 98px;
+  border-left: 1px solid #ccc;
+  border-bottom: 1px solid #DDD;
+  box-sizing: border-box;
+}
+
+.right-com-top-tab {
+  height: 47px;
+  padding: 2px 0;
+  line-height: 47px;
+  box-sizing: border-box;
+  background-color: #F9F9F9;
+  border-bottom: 2px solid #C8C9CC;
+}
+
+.right-tab {
+  width: calc(100% - 250px);
+  height: 41px;
+  display: inline-block;
+  box-sizing: border-box;
+  border-right: 1px solid #E1E1E1;
+}
+
+.right-tab .data-button {
+  display: inline-block;
+  line-height: 46px;
+  cursor: pointer;
+  font-size: 14px;
+  padding-left: 22px;
+  color: #4F4F4F;
+}
+
+.right-tab .data-button:hover {
+  color: #20ACF1;
+}
+
+.right-tab .btn3 {
+  float: right;
+  padding-right: 20px;
+}
+
+.left-tab {
+  width: 220px;
+  height: 41px;
+  line-height: 41px;
+  display: inline-block;
+}
+
+.left-tab .icon-btn {
+  color: #445463;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+.right-com-top-ctl {
+  box-sizing: border-box;
+  height: 51px;
+  line-height: 51px;
+  padding: 0 10px;
+  color: #7B7676;
+  background-color: #FFFFFF;
+}
+
+.right-com-top-ctl .icon {
+  margin-left: 10px;
+}
+
+.right-com-top-ctl .icon-btn {
+  color: #7B7676;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+.right-com-main {
+  height: calc(100% - 146px);
+  border-top: 1px solid #DDD;
+  box-sizing: border-box;
+}
+
+.right-com-main .fx-control {
   position: relative;
   border-bottom: 1px solid #D4D4D4;
   height: 26px;
@@ -690,7 +639,12 @@ div.active {
   color: #737373;
 }
 
-.right-wrapper-table .fx-control .fx-left {
+.right-com-main .main-table {
+  height: calc(100% - 26px);
+  overflow: hidden;
+}
+
+.fx-control .fx-left {
   position: absolute;
   width: 33px;
   height: 21px;
@@ -700,7 +654,7 @@ div.active {
   cursor: pointer;
 }
 
-.right-wrapper-table .fx-control input {
+.fx-control input {
   width: 100%!important;
   height: 26px;
   font-size: 12px;
@@ -712,6 +666,21 @@ div.active {
   outline: 0;
   box-shadow: none;
   color: #737373;
+}
+
+.right-com-bottom {
+  height: 48px;
+  line-height: 48px;
+  box-sizing: border-box;
+  background-color: #F9F9F9;
+  padding-left: 20px;
+  border-left: 1px solid #ccc;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+.right-com-bottom span {
+  padding-right: 10px;
 }
 
 #example,
@@ -727,3 +696,4 @@ div.active {
   border-radius: 4px;
 }
 </style>
+
