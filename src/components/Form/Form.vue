@@ -19,7 +19,7 @@
           </div>
           <div class="left-tab">
             <el-tooltip class="item" effect="dark" content="保存" placement="bottom">
-              <span class="icon-btn">
+              <span class="icon-btn" @click="_saveData">
                 <i class="iconfont">&#xe634;</i>
               </span>
             </el-tooltip>
@@ -37,13 +37,13 @@
         </div>
         <div class="right-com-top-ctl">
           <el-tooltip class="item" effect="dark" content="插入行" placement="bottom">
-            <span class="icon-btn">
+            <span class="icon-btn" @click="_insertRows">
               <i class="iconfont">&#xe600;</i>
             </span>
           </el-tooltip>
 
           <el-tooltip class="item" effect="dark" content="插入列" placement="bottom">
-            <span class="icon-btn">
+            <span class="icon-btn" @click="_insertCols">
               <i class="iconfont">&#xe6d2;</i>
             </span>
           </el-tooltip>
@@ -65,18 +65,18 @@
             </span>
           </el-tooltip>
           <span class="iconfont icon">&#xe601;</span>
-           <el-tooltip class="item" effect="dark" content="合并单元格" placement="bottom">
+          <el-tooltip class="item" effect="dark" content="合并单元格" placement="bottom">
             <span class="icon-btn">
               <i class="iconfont">&#xe60e;</i>
             </span>
           </el-tooltip>
 
-           <el-tooltip class="item" effect="dark" content="拆分单元格" placement="bottom">
+          <el-tooltip class="item" effect="dark" content="拆分单元格" placement="bottom">
             <span class="icon-btn">
               <i class="iconfont">&#xe60d;</i>
             </span>
           </el-tooltip>
-           <el-tooltip class="item" effect="dark" content="求和" placement="bottom">
+          <el-tooltip class="item" effect="dark" content="求和" placement="bottom">
             <span class="icon-btn">
               <i class="iconfont">&#xe643;</i>
             </span>
@@ -85,8 +85,10 @@
       </div>
       <div class="right-com-main">
         <div class="fx-control">
-          <div class="fx-left"></div>
-          <input type="text" size="200" style="width:400px">
+          <div class="fx-left">
+            <i class="iconfont">&#xe74c;</i>
+          </div>
+          <input type="text" size="200" style="width:400px" ref="search_ipt">
         </div>
         <div class="main-table" id="example"></div>
       </div>
@@ -101,6 +103,7 @@
   </aside>
 </template>
 <script>
+document.onselectstart = function() { return false; }
 import '../../assets/js/lib/handsontable.full.min.css'
 export default {
   data() {
@@ -108,6 +111,7 @@ export default {
       currentIndex: 1,
       dataVal: [[1], [2], [3]],
       hot: Object,
+      flagOfsel: false, // 用来判断是否是备选中的状态，如果是true，就是被选中的状态，所以就在当前行或列添加，如果是false，就默认在第一行添加行或列
       hotSeeting: {
         colHeaders: true,
         rowHeaders: true,//行表头
@@ -119,46 +123,54 @@ export default {
         contextMenu: true,
         fillHandle: false
       },
-      search_show: true,
       zonghe: 0,
       arr: [],
-      doms: "",
-      this_cell: null,
-      defaultProps: {
-        children: 'children',
-        label: 'label'
-      }
+      doms: "", // 用来保存保存高亮的dom。
+      // 用来保存，用户选中的行，来实现插入行和删除行，合并行等等
+      clos: 0, // 列
+      rows: 0, // 行
+      rows1: 0,
+      cols2: 0
     }
   },
   mounted() {
-    // let container = document.querySelector('.left-wrapper');
+    // 初始化表格
+    this.InitHot(document.querySelector('#example'), this.hotSeeting);
 
-    // Ps.initialize(container);
+    // 搜索事件
+    this._GlobalSearch();
 
-    // 发送请求获取数据，并且转换为数组放入这个容器中.
-
-    this.InitHot(document.querySelector('#example'), this.hotSeeting); // 初始化
 
     // this.hot.loadData(this.dataVal);  重载本地数据
 
-    this._changeSetting(); // 修改配置
+    // this._changeSetting(); // 修改配置
 
-    this._search();  // 搜索按钮事件
 
-    this._Statistics();  // 统计所有行数列数
 
-    this.download(); // 导出文件为CSV
+    // this._Statistics();  // 统计所有行数列数
 
-    this._loadData();
+    // this.download(); // 导出文件为CSV
 
-    this._calAdd();
+    // this._loadData();
+
+    // this._calAdd();
 
     // 如果重新加载的话提示用户先保存
     window.onbeforeunload = function() {
-      return '信息还未'
-    }
+      return null;
+    };
   },
   methods: {
+    addClass(doms) {
+      for (var i = 0; i < doms.length; i++) {
+        doms[i].classList.add('important');
+        doms[i].style.background = 'red !important';
+        // background: linear-gradient(180deg, rgba(181, 209, 255, .34) 0, rgba(181, 209, 255, .34));
+      };
+      console.log(doms);
+    },
+    removeClass() { },
+
     // 打开提示，常用于主动操作后的反馈提示。与 Notification 的区别是后者更多用于系统级通知的被动提醒。
     openNotice(type, text) {
       if (type === 'alert') {//普通提示
@@ -176,16 +188,44 @@ export default {
       } else {  // error  错误提示
         this.$message.error(text);
       }
+    },
 
+    // 插入行
+    _insertRows() {
+      let _this = this;
+      _this.hot.selectCell(_this.rows, _this.clos, _this.rows1, _this.cols2);
+      if (_this.insert_row) _this.hot.alter('insert_row', _this.rows);
+      else _this.hot.alter('insert_row', 0); _this.insert_row = false;
+    },
+
+    // 插入列
+    _insertCols() {
+      let _this = this;
+      _this.hot.selectCell(_this.rows, _this.clos, _this.rows1, _this.cols2);
+      if (_this.insert_row) { _this.hot.alter('insert_col', _this.clos); }
+      else { _this.hot.alter('insert_col', 0); _this.insert_row = false; }
+    },
+
+    // 删除行  ht.alter('remove_col'); 
+    _deleteClos() {
+      let _this = this;
+      if (_this.insert_row) { _this.hot.alter('remove_col', _this.clos); }
+      else { _this.hot.alter('remove_col', 0); _this.insert_row = false; }
+    },
+
+    // 删除列  ht.alter('remove_row'); 
+    _deleteRows() {
+      let _this = this;
+      if (_this.insert_row) { _this.hot.alter('remove_row', _this.clos); }
+      else { _this.hot.alter('remove_row', 0); _this.insert_row = false; }
     },
     // 清空列表
     clear() {
       this.hot.getNowFormatDate();
     },
-    // 下载方法
+    // 下载
     download() {
       let _this = this;
-      console.log(_this.hot);
       Handsontable.dom.addEvent(document.querySelector('#download'), 'click', function() {
         let exportPlugin = _this.hot.getPlugin('exportFile');
         exportPlugin.downloadFile('csv', {
@@ -195,21 +235,19 @@ export default {
         });
       })
     },
-    _changeSetting() {
-      let _this = this;
-      let changeSetting = document.getElementById('changeSetting');
-      Handsontable.dom.addEvent(changeSetting, 'click', function() {
-        let defSettging = {
+    InitHot(dom, seeting) {
+      let _this = this,
+        defSettging = {
           colHeaders: true,// 列表头
           rowHeaders: true,//行表头
           stretchH: 'all', // 是否
-          startRows: 30,
-          startCols: 30,
-          minCols: 30,
-          minRows: 30,
+          startRows: 15,
+          startCols: 26,
+          minCols: 26,
+          minRows: 20,
           manualColumnFreeze: true,
           autoColumnSize: true,
-          fixedRowsBottom: 2,
+          fixedRowsBottom: 1,
           search: true,// 启用搜索
           autoWrapRow: true, //自动换行
           copyPaste: true,
@@ -276,167 +314,62 @@ export default {
           manualRowResize: true,
           columnSorting: true, //排序，通过方法更改
           mergeCells: true, // 合并单元格
-          afterSelectionEnd(o, two, t, f) { //选中表格鼠标抬时触发
-            let big = _this.hot.getValue(o, two, t, f);// 获取到一个格子的值
-            let one = _this.hot.getData(o, two, t, f);
+          afterSelectionEnd(r, c, r1, c2) { //选中表格鼠标抬时触发 r行，c列 console.log(`${r}行+${c}列`);
+            _this.doms = '';
+            _this.flagOfsel = true;
+            _this.rows = r;
+            _this.clos = c;
+            _this.rows1 = r1;
+            _this.cols2 = c2;
+
+            let big = _this.hot.getValue(r, c, r1, c2);// 获取到一个格子的值
+            let one = _this.hot.getData(r, c, r1, c2);
             _this.doms = document.querySelectorAll('.highlight');
-            // console.log(_this.doms);
+            console.log(_this.doms);
             // console.log(one);
             let arr = [];
             for (let i = 0; i < one.length; i++) {
               for (let j = 0; j < one[i].length; j++) {
+                console.log('这是数字' + !isNaN(one[i][j]));
                 arr.push(one[i][j]);
               }
             }
-            console.log(arr);//选中结束后拿到所有被选中的值
+            console.log('被选中的值' + arr);//选中结束后拿到所有被选中的值
             _this.arr = arr;
             // console.log(o);
             // console.log(two);
             // console.log(f);
             // console.log(t);
-            let hun = _this.hot.getSelected(o, two, t, f);
+            // let hun = _this.hot.getSelected(o, two, t, f);
             // console.log(hun);
           },
-          // 保存数据
+          // 发生更改自定保存数据
           afterChange(change, source) {// 完成文字的输入就会触发该函数
             if (source == 'loadData') return //第一次加载也会触发需要判断
             else {
               let two = _this.hot.getData();
-              _this.dataVal = two;// 如果发生改变就保存
+              // _this.dataVal = two;// 如果发生改变就保存
             }
-          },
-
-        }
-        console.log('更新设置中');
-        _this.hot.updateSettings(defSettging);
-      })
-    },
-    InitHot(dom, seeting) {
-      let _this = this;
-      let defSettging = {
-        colHeaders: true,// 列表头
-        rowHeaders: true,//行表头
-        stretchH: 'all', // 是否
-        startRows: 15,
-        startCols: 26,
-        minCols: 26,
-        minRows: 20,
-        manualColumnFreeze: true,
-        autoColumnSize: true,
-        fixedRowsBottom: 1,
-        search: true,// 启用搜索
-        autoWrapRow: true, //自动换行
-        copyPaste: true,
-        customBorders: true,
-        contextMenu: {
-          items: {
-            "row_above": {
-              name: "在上面插入行"
-            },
-            "row_below": {
-              name: "在下面插入行"
-            },
-            "col_left": {
-              name: "在左侧插入列"
-            },
-            "col_right": {
-              name: "在右侧插入列"
-            },
-            "hsep1": "---------",
-            "clear_column": {
-              name: "清空所选列"
-            },
-            "remove_row": {
-              name: "删除行"
-            },
-            "remove_col": {
-              name: "删除列"
-            },
-            "undo": {
-              name: "撤销"
-            },
-            "redo": {
-              name: "恢复"
-            },
-            "make_read_only": {
-              name: "只读"
-            },
-            "hsep2": "---------",
-            "alignment": {
-              name: "对齐方式"
-            },
-            "mergeCells": {
-              name: "合并单元格"
-            },
-            "borders": {
-              name: "边框样式"
-            },
-            "copy": {
-              name: "复制"
-            },
-            "cut": {
-              name: "剪切"
-            },
-            "hsep3": "---------",
-            "freeze_column": {
-              name: "冻结该列"
-            },
-            "unfreeze_column": {
-              name: "解除冻结"
-            }
-          }
-        },
-        manualColumnResize: true,
-        manualRowResize: true,
-        columnSorting: true, //排序，通过方法更改
-        mergeCells: true, // 合并单元格
-        afterSelectionEnd(o, two, t, f) { //选中表格鼠标抬时触发
-          let big = _this.hot.getValue(o, two, t, f);// 获取到一个格子的值
-          let one = _this.hot.getData(o, two, t, f);
-          _this.doms = document.querySelectorAll('.highlight');
-          // console.log(_this.doms);
-          // console.log(one);
-          let arr = [];
-          for (let i = 0; i < one.length; i++) {
-            for (let j = 0; j < one[i].length; j++) {
-              console.log('这是数字' + !isNaN(one[i][j]));
-              arr.push(one[i][j]);
-            }
-          }
-          console.log('被选中的值' + arr);//选中结束后拿到所有被选中的值
-          _this.arr = arr;
-          // console.log(o);
-          // console.log(two);
-          // console.log(f);
-          // console.log(t);
-          let hun = _this.hot.getSelected(o, two, t, f);
-          // console.log(hun);
-        },
-        // 发生更改自定保存数据
-        afterChange(change, source) {// 完成文字的输入就会触发该函数
-          if (source == 'loadData') return //第一次加载也会触发需要判断
-          else {
-            let two = _this.hot.getData();
-            // _this.dataVal = two;// 如果发生改变就保存
           }
         }
-      }
       this.hot = new Handsontable(dom, defSettging);
       // seeting == Object ? this.hot = new Handsontable(dom, seeting) : this.hot = new Handsontable(dom, defSettging)
     },
+
     // 获取到表中所有的值，执行保存操作的时候获取
-    getVal() {
+    _saveData() {
       let one = this.hot.getData();
-      // console.log(one);
+      console.log(one);
+      // 拿到数据后并且保存到后端
     },
+
     // 全局搜索高亮
-    _search() {
-      let _this = this;
-      Handsontable.dom.addEvent(document.querySelector('#search_ipt'), 'keyup', function(event) {
+    _GlobalSearch() {
+      let _this = this,
+        doms = this.$refs.search_ipt;
+      Handsontable.dom.addEvent(doms, 'keyup', function(event) {
         console.log('搜索事件启用');
         let queryResult = _this.hot.search.query(this.value);
-        console.log(queryResult);
-        console.log(_this.hot);
         _this.hot.render();
       });
     },
@@ -652,6 +585,12 @@ export default {
   top: 2px;
   border-right: 1px solid #C7C8C9;
   cursor: pointer;
+  text-align: center;
+  line-height: 21px;
+}
+
+.fx-control .fx-left .iconfont {
+  font-size: 18px;
 }
 
 .fx-control input {

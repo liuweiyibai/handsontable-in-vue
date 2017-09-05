@@ -20,6 +20,17 @@
 </template>
 <script>
 export default {
+  data(){
+    return {
+      activeIndex2:0
+    }
+  },
+  methods:{
+    handleSelect(){
+      console.log('我被选中了！');
+      
+    }
+  }
 }
 </script>
 
