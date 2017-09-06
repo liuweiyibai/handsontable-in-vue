@@ -38,7 +38,7 @@
         <div class="right-com-top-ctl">
           <el-tooltip class="item" effect="dark" content="插入行" placement="bottom">
             <span class="icon-btn" @click="_insertRows">
-              <i class="iconfont">&#xe600;</i>
+              <i class="iconfont">&#xe8c4;</i>
             </span>
           </el-tooltip>
 
@@ -49,31 +49,43 @@
           </el-tooltip>
 
           <el-tooltip class="item" effect="dark" content="删除行" placement="bottom">
-            <span class="icon-btn">
+            <span class="icon-btn" @click.stop.prevent="_deleteRow">
               <i class="iconfont">&#xe6d0;</i>
             </span>
           </el-tooltip>
 
           <el-tooltip class="item" effect="dark" content="删除列" placement="bottom">
-            <span class="icon-btn">
+            <span class="icon-btn" @click.stop.prevent="_deleteCol">
               <i class="iconfont">&#xe6d1;</i>
             </span>
           </el-tooltip>
-          <el-tooltip class="item" effect="dark" content="冻结行" placement="bottom">
-            <span class="icon-btn">
-              <i class="iconfont">&#xe65d;</i>
+          <el-tooltip class="item" effect="dark" content="删除选中" placement="bottom">
+            <span class="icon-btn" @click="_deleteSel">
+              <i class="iconfont">&#xe61b;</i>
             </span>
           </el-tooltip>
-          <span class="iconfont icon">&#xe601;</span>
-          <el-tooltip class="item" effect="dark" content="合并单元格" placement="bottom">
-            <span class="icon-btn">
-              <i class="iconfont">&#xe60e;</i>
+          <el-tooltip class="item" effect="dark" content="分析还原" placement="bottom">
+            <span class="icon-btn" @click.stop.prevent="_mergeTable">
+              <i class="iconfont">&#xe728;</i>
             </span>
           </el-tooltip>
 
-          <el-tooltip class="item" effect="dark" content="拆分单元格" placement="bottom">
+          <el-tooltip class="item" effect="dark" content="查询" placement="bottom">
+            <span class="icon-btn" @click.stop.prevent="_mergeTable">
+              <i class="iconfont">&#xe684;</i>
+            </span>
+          </el-tooltip>
+
+          <span class="iconfont icon">&#xe601;</span>
+          <el-tooltip class="item" effect="dark" content="最大值" placement="bottom">
             <span class="icon-btn">
-              <i class="iconfont">&#xe60d;</i>
+              <i class="iconfont">&#xe67c;</i>
+            </span>
+          </el-tooltip>
+
+          <el-tooltip class="item" effect="dark" content="最小值" placement="bottom">
+            <span class="icon-btn">
+              <i class="iconfont">&#xe67b;</i>
             </span>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="求和" placement="bottom">
@@ -108,52 +120,45 @@ import '../../assets/js/lib/handsontable.full.min.css'
 export default {
   data() {
     return {
-      currentIndex: 1,
-      dataVal: [[1], [2], [3]],
-      hot: Object,
+      currentIndex: 1, // 保存当前页数
+      dataVal: [], // 保存后台返回的表格数据
+      hot: Object, // 保存表格对象
       flagOfsel: false, // 用来判断是否是备选中的状态，如果是true，就是被选中的状态，所以就在当前行或列添加，如果是false，就默认在第一行添加行或列
-      hotSeeting: {
-        colHeaders: true,
-        rowHeaders: true,//行表头
-        startRows: 30,
-        startCols: 15,
-        search: true,
-        fixedRowsBottom: 2,
-        autoWrapRow: true, //自动换行
-        contextMenu: true,
-        fillHandle: false
-      },
-      zonghe: 0,
-      arr: [],
-      doms: "", // 用来保存保存高亮的dom。
-      // 用来保存，用户选中的行，来实现插入行和删除行，合并行等等
-      clos: 0, // 列
-      rows: 0, // 行
-      rows1: 0,
-      cols2: 0
+
+      startRow: 0, // 开始行
+      startCol: 0, //开始列
+      endRow: 0,//结束行
+      endCol: 0//结束列
     }
   },
   mounted() {
+    let _this = this;
     // 初始化表格
-    this.InitHot(document.querySelector('#example'), this.hotSeeting);
+    _this.InitHot(document.querySelector('#example'), this.hotSeeting);
+    _this.hot.addHook('afterSelectionEnd', function(startRow, startCol, endRow, endCol) { //选中表格鼠标抬时触发 r行，c列
+      // console.log(`开始${r}+${c}+${r1}+${c2}`);
+      _this.flagOfsel = true;
+      _this.startRow = startRow;
+      _this.startCol = startCol;
+      _this.endRow = endRow;
+      _this.endCol = endCol;
+
+      let big = _this.hot.getValue(startRow, startCol, endRow, endCol);// 获取到一个格子的值
+      let one = _this.hot.getData(startRow, startCol, endRow, endCol);
+
+      let arr = [];
+      for (let i = 0; i < one.length; i++) {
+        for (let j = 0; j < one[i].length; j++) {
+          console.log('这是数字' + !isNaN(one[i][j]));
+          arr.push(one[i][j]);
+        }
+      }
+      console.log('被选中的值' + arr);//选中结束后拿到所有被选中的值
+      _this.arr = arr;
+    });
 
     // 搜索事件
     this._GlobalSearch();
-
-
-    // this.hot.loadData(this.dataVal);  重载本地数据
-
-    // this._changeSetting(); // 修改配置
-
-
-
-    // this._Statistics();  // 统计所有行数列数
-
-    // this.download(); // 导出文件为CSV
-
-    // this._loadData();
-
-    // this._calAdd();
 
     // 如果重新加载的话提示用户先保存
     window.onbeforeunload = function() {
@@ -161,15 +166,6 @@ export default {
     };
   },
   methods: {
-    addClass(doms) {
-      for (var i = 0; i < doms.length; i++) {
-        doms[i].classList.add('important');
-        doms[i].style.background = 'red !important';
-        // background: linear-gradient(180deg, rgba(181, 209, 255, .34) 0, rgba(181, 209, 255, .34));
-      };
-      console.log(doms);
-    },
-    removeClass() { },
 
     // 打开提示，常用于主动操作后的反馈提示。与 Notification 的区别是后者更多用于系统级通知的被动提醒。
     openNotice(type, text) {
@@ -193,48 +189,63 @@ export default {
     // 插入行
     _insertRows() {
       let _this = this;
-      _this.hot.selectCell(_this.rows, _this.clos, _this.rows1, _this.cols2);
-      if (_this.insert_row) _this.hot.alter('insert_row', _this.rows);
-      else _this.hot.alter('insert_row', 0); _this.insert_row = false;
+      if (_this.flagOfsel) {
+        _this.hot.selectCell(_this.startRow, _this.startCol);
+        _this.hot.alter('insert_row', _this.startRow);
+        _this.flagOfsel = false;
+      } else {
+        _this.hot.selectCell(0, _this.startCol);
+        _this.hot.alter('insert_row', 0); _this.flagOfsel = false;
+      }
     },
 
     // 插入列
     _insertCols() {
       let _this = this;
-      _this.hot.selectCell(_this.rows, _this.clos, _this.rows1, _this.cols2);
-      if (_this.insert_row) { _this.hot.alter('insert_col', _this.clos); }
-      else { _this.hot.alter('insert_col', 0); _this.insert_row = false; }
+      if (_this.flagOfsel) {
+        _this.hot.selectCell(_this.startRow, _this.startCol);
+        _this.hot.alter('insert_col', _this.startCol);
+        _this.flagOfsel = false;
+      } else {
+        _this.hot.selectCell(_this.startRow, 0);
+        _this.hot.alter('insert_col', 0); _this.insert_row = false;
+
+      }
     },
 
-    // 删除行  ht.alter('remove_col'); 
-    _deleteClos() {
+    // 删除行  
+    _deleteRow() {
       let _this = this;
-      if (_this.insert_row) { _this.hot.alter('remove_col', _this.clos); }
-      else { _this.hot.alter('remove_col', 0); _this.insert_row = false; }
+      if (_this.flagOfsel) {
+        _this.hot.selectCell(_this.startRow, _this.startCol);
+        _this.hot.alter('remove_row', _this.startRow);
+      } else {
+        _this.hot.selectCell(_this.startRow, 0);
+        _this.hot.alter('remove_row', 0); _this.flagOfsel = false;
+      }
     },
 
-    // 删除列  ht.alter('remove_row'); 
-    _deleteRows() {
+    // 删除列
+    _deleteCol() {
       let _this = this;
-      if (_this.insert_row) { _this.hot.alter('remove_row', _this.clos); }
-      else { _this.hot.alter('remove_row', 0); _this.insert_row = false; }
+      console.log(_this.rows);
+      if (_this.flagOfsel) {
+        _this.hot.selectCell(_this.startRow, _this.startCol);
+        _this.hot.alter('remove_col', _this.startCol);
+      } else {
+        _this.hot.alter('remove_col', 0); _this.flagOfsel = false;
+      }
     },
-    // 清空列表
-    clear() {
-      this.hot.getNowFormatDate();
-    },
-    // 下载
-    download() {
+
+    // 删除选中的(实际是cut掉)
+    _deleteSel() {
       let _this = this;
-      Handsontable.dom.addEvent(document.querySelector('#download'), 'click', function() {
-        let exportPlugin = _this.hot.getPlugin('exportFile');
-        exportPlugin.downloadFile('csv', {
-          filename: Math.random().toString(20).substr(2),
-          rowHeaders: false,
-          columnHeaders: true,
-        });
-      })
+      if (_this.flagOfsel) {
+        _this.hot.selectCell(_this.startRow, _this.startCol, _this.endRow, _this.endCol);
+        _this.hot.getPlugin('copyPaste').cut();
+      }
     },
+
     InitHot(dom, seeting) {
       let _this = this,
         defSettging = {
@@ -286,14 +297,8 @@ export default {
                 name: "只读"
               },
               "hsep2": "---------",
-              "alignment": {
-                name: "对齐方式"
-              },
               "mergeCells": {
                 name: "合并单元格"
-              },
-              "borders": {
-                name: "边框样式"
               },
               "copy": {
                 name: "复制"
@@ -310,39 +315,12 @@ export default {
               }
             }
           },
+          manualColumnMove: true,
+          manualRowMove: true,
           manualColumnResize: true,
           manualRowResize: true,
           columnSorting: true, //排序，通过方法更改
           mergeCells: true, // 合并单元格
-          afterSelectionEnd(r, c, r1, c2) { //选中表格鼠标抬时触发 r行，c列 console.log(`${r}行+${c}列`);
-            _this.doms = '';
-            _this.flagOfsel = true;
-            _this.rows = r;
-            _this.clos = c;
-            _this.rows1 = r1;
-            _this.cols2 = c2;
-
-            let big = _this.hot.getValue(r, c, r1, c2);// 获取到一个格子的值
-            let one = _this.hot.getData(r, c, r1, c2);
-            _this.doms = document.querySelectorAll('.highlight');
-            console.log(_this.doms);
-            // console.log(one);
-            let arr = [];
-            for (let i = 0; i < one.length; i++) {
-              for (let j = 0; j < one[i].length; j++) {
-                console.log('这是数字' + !isNaN(one[i][j]));
-                arr.push(one[i][j]);
-              }
-            }
-            console.log('被选中的值' + arr);//选中结束后拿到所有被选中的值
-            _this.arr = arr;
-            // console.log(o);
-            // console.log(two);
-            // console.log(f);
-            // console.log(t);
-            // let hun = _this.hot.getSelected(o, two, t, f);
-            // console.log(hun);
-          },
           // 发生更改自定保存数据
           afterChange(change, source) {// 完成文字的输入就会触发该函数
             if (source == 'loadData') return //第一次加载也会触发需要判断
@@ -356,7 +334,7 @@ export default {
       // seeting == Object ? this.hot = new Handsontable(dom, seeting) : this.hot = new Handsontable(dom, defSettging)
     },
 
-    // 获取到表中所有的值，执行保存操作的时候获取
+    // 保存数据
     _saveData() {
       let one = this.hot.getData();
       console.log(one);
@@ -373,14 +351,8 @@ export default {
         _this.hot.render();
       });
     },
-    // 统计所有的行数列数
-    _Statistics() {
-      let _this = this;
-      // console.log(_this.hot.countCols());
-      // console.log(_this.hot.countRows());
-      _this.hot.countCols();// 行数
-      _this.hot.countRows(); // 列数
-    },
+
+    // 载入数据
     _loadData() {
       let _this = this;
       Handsontable.dom.addEvent(_this.$refs.btn111, 'click', function(event) {
@@ -408,18 +380,6 @@ export default {
         for (let i = 0; i < arr.length; i++) {
 
         }
-
-
-        // for ( k in this.arr){
-        //     console.log(k);
-        // }
-        // _this.doms.forEach((item, index) => {
-        //   item.classList.add('highlight');
-        //   item.classList.add('current');
-        //   item.classList.add('area');
-        // })
-        // _this.zonghe = eval(_this.arr.join("+"));
-        // // console.log(_this.zonghe);
       })
     }
   }
@@ -533,7 +493,6 @@ export default {
 }
 
 .left-tab .icon-btn {
-  color: #445463;
   cursor: pointer;
   margin-left: 20px;
 }
@@ -542,9 +501,27 @@ export default {
   box-sizing: border-box;
   height: 51px;
   line-height: 51px;
-  padding: 0 10px;
+  padding: 3px 10px;
   color: #7B7676;
   background-color: #FFFFFF;
+}
+
+.right-com-top-ctl .icon-btn {
+  display: inline-block;
+  height: 26px;
+  width: 32px;
+  text-align: center;
+  padding-top: 4px;
+  color: #455564;
+  line-height: 1;
+  border: 1px solid rgb(255, 255, 255);
+  ;
+}
+
+.right-com-top-ctl .icon-btn:hover {
+  background: #f9f9f9;
+  border-radius: 3px;
+  border: 1px solid #ddd;
 }
 
 .right-com-top-ctl .icon {
