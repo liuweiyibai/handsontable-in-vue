@@ -65,13 +65,13 @@
             </span>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="分析还原" placement="bottom">
-            <span class="icon-btn" @click.stop.prevent="_mergeTable">
+            <span class="icon-btn" @click.stop.prevent="_analyiseRestart">
               <i class="iconfont">&#xe728;</i>
             </span>
           </el-tooltip>
 
           <el-tooltip class="item" effect="dark" content="查询" placement="bottom">
-            <span class="icon-btn" @click.stop.prevent="_mergeTable">
+            <span class="icon-btn" @click.stop.prevent="_startRequire">
               <i class="iconfont">&#xe684;</i>
             </span>
           </el-tooltip>
@@ -97,7 +97,7 @@
       </div>
       <div class="right-com-main">
         <div class="fx-control">
-          <div class="fx-left">
+          <div class="fx-left" @click="dialogFormVisible = true">
             <i class="iconfont">&#xe74c;</i>
           </div>
           <input type="text" size="200" style="width:400px" ref="search_ipt">
@@ -112,6 +112,24 @@
         </div>
       </div>
     </div>
+
+    <el-dialog title="函数列表" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item label="类别" :label-width="formLabelWidth">
+          <el-input v-model="form.name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="函数" :label-width="formLabelWidth">
+          <el-select v-model="form.region" placeholder="请选择活动区域">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </aside>
 </template>
 <script>
@@ -128,7 +146,19 @@ export default {
       startRow: 0, // 开始行
       startCol: 0, //开始列
       endRow: 0,//结束行
-      endCol: 0//结束列
+      endCol: 0,//结束列
+      dialogFormVisible: false,
+      form: {
+        name: '',
+        region: '',
+        date1: '',
+        date2: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: ''
+      },
+      formLabelWidth: '120px'
     }
   },
   mounted() {
@@ -215,10 +245,11 @@ export default {
 
     // 删除行  
     _deleteRow() {
-      let _this = this;
+      let _this = this,
+        count = _this.endRow - _this.startRow + 1;
       if (_this.flagOfsel) {
         _this.hot.selectCell(_this.startRow, _this.startCol);
-        _this.hot.alter('remove_row', _this.startRow);
+        _this.hot.alter('remove_row', _this.startRow, count);
       } else {
         _this.hot.selectCell(_this.startRow, 0);
         _this.hot.alter('remove_row', 0); _this.flagOfsel = false;
@@ -227,11 +258,11 @@ export default {
 
     // 删除列
     _deleteCol() {
-      let _this = this;
-      console.log(_this.rows);
+      let _this = this,
+        count = _this.endCol - _this.startCol + 1;
       if (_this.flagOfsel) {
         _this.hot.selectCell(_this.startRow, _this.startCol);
-        _this.hot.alter('remove_col', _this.startCol);
+        _this.hot.alter('remove_col', _this.startCol, count);
       } else {
         _this.hot.alter('remove_col', 0); _this.flagOfsel = false;
       }
@@ -246,6 +277,36 @@ export default {
       }
     },
 
+    // 打开一个对话框
+    _openDialog() {
+      let _this = this;
+
+    },
+
+    // 数据还原到最开始的状态
+    _analyiseRestart() {
+      let _this = this;
+      this.$confirm('确定还原此报表吗？自定义数据与操作都将丢失（保存报表之后生效）。', {
+        callback: function(data) {
+          if (data === 'confirm') {
+            _this.$message({
+              type: 'success',
+              message: '还原成功!'
+            })
+          } else {
+            _this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
+          }
+        }
+      })
+    },
+
+    // 使用公式开始查询计算 
+    _startRequire() {
+
+    },
     InitHot(dom, seeting) {
       let _this = this,
         defSettging = {
@@ -278,15 +339,6 @@ export default {
                 name: "在右侧插入列"
               },
               "hsep1": "---------",
-              "clear_column": {
-                name: "清空所选列"
-              },
-              "remove_row": {
-                name: "删除行"
-              },
-              "remove_col": {
-                name: "删除列"
-              },
               "undo": {
                 name: "撤销"
               },
@@ -300,18 +352,8 @@ export default {
               "mergeCells": {
                 name: "合并单元格"
               },
-              "copy": {
-                name: "复制"
-              },
-              "cut": {
-                name: "剪切"
-              },
-              "hsep3": "---------",
               "freeze_column": {
                 name: "冻结该列"
-              },
-              "unfreeze_column": {
-                name: "解除冻结"
               }
             }
           },
@@ -319,7 +361,6 @@ export default {
           manualRowMove: true,
           manualColumnResize: true,
           manualRowResize: true,
-          columnSorting: true, //排序，通过方法更改
           mergeCells: true, // 合并单元格
           // 发生更改自定保存数据
           afterChange(change, source) {// 完成文字的输入就会触发该函数
@@ -336,8 +377,8 @@ export default {
 
     // 保存数据
     _saveData() {
-      let one = this.hot.getData();
-      console.log(one);
+      let saveDatas = this.hot.getData();
+      // 加载 loading
       // 拿到数据后并且保存到后端
     },
 
@@ -346,7 +387,6 @@ export default {
       let _this = this,
         doms = this.$refs.search_ipt;
       Handsontable.dom.addEvent(doms, 'keyup', function(event) {
-        console.log('搜索事件启用');
         let queryResult = _this.hot.search.query(this.value);
         _this.hot.render();
       });
@@ -444,7 +484,7 @@ export default {
 
 .right-com-top {
   width: 100%;
-  height: 98px;
+  height: 88px;
   border-left: 1px solid #ccc;
   border-bottom: 1px solid #DDD;
   box-sizing: border-box;
@@ -499,9 +539,9 @@ export default {
 
 .right-com-top-ctl {
   box-sizing: border-box;
-  height: 51px;
-  line-height: 51px;
-  padding: 3px 10px;
+  height: 41px;
+  line-height: 40px;
+  padding: 2px 0px;
   color: #7B7676;
   background-color: #FFFFFF;
 }
@@ -535,7 +575,7 @@ export default {
 }
 
 .right-com-main {
-  height: calc(100% - 146px);
+  height: calc(100% - 128px);
   border-top: 1px solid #DDD;
   box-sizing: border-box;
 }
@@ -585,8 +625,8 @@ export default {
 }
 
 .right-com-bottom {
-  height: 48px;
-  line-height: 48px;
+  height: 40px;
+  line-height: 40px;
   box-sizing: border-box;
   background-color: #F9F9F9;
   padding-left: 20px;
