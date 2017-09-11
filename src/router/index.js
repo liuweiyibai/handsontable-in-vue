@@ -39,6 +39,11 @@ const Form = (resolve) => {
   })
 }
 
+const InstrumentBoard =  (resolve) => {
+  import ('@/components/InstrumentBoard/InstrumentBoard').then((module) => {
+    resolve(module);
+  })
+}
 
 export default new Router({
   mode: 'history',
@@ -46,6 +51,11 @@ export default new Router({
       path: "/",
       name: 'root',
       component: Form
+    },
+    {
+      path:"/InstrumentBoard",
+      name:"InstrumentBoard",
+      component:InstrumentBoard
     },
     {
       path: '/upload-data',

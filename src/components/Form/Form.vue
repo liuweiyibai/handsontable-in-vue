@@ -7,14 +7,29 @@
           <i class="iconfont">&#xe63b;</i>
         </el-tooltip>
       </div>
-      <div class="left-com-bottom"></div>
+      <div class="left-com-bottom">
+        <div class="top" style="overflow:hidden;position:relative;">
+          <div class="title">维度</div>
+          <ul class="RowMeasure" style="height:800px;">
+            <li class="itemlist" :draggable="item.age" title="拖拽添加" :data-index="index" v-for="(item,index) in colsList" :key="index"><i class="iconfont">&#xe607;</i>{{item.name}}</li>
+          </ul>
+        </div>
+        <div class="bottom" style="overflow:hidden;position:relative;">
+          <div class="title">度量</div>
+          <ul class="ColMeasure" style="height:800px;">
+            <li>2</li>
+          </ul>
+        </div>
+      </div>
     </div>
     <div class="right-com">
       <div class="right-com-top">
         <div class="right-com-top-tab">
           <div class="right-tab">
             <div data-type="button" class="data-button btn1">表格</div>
-            <div data-type="button" class="data-button btn2">图表</div>
+            <div data-type="button" class="data-button btn2">
+              <router-link to="/InstrumentBoard">图表</router-link>
+            </div>
             <div data-type="button" class="data-button btn3">重置数据</div>
           </div>
           <div class="left-tab">
@@ -88,8 +103,13 @@
               <i class="iconfont">&#xe67b;</i>
             </span>
           </el-tooltip>
-          <el-tooltip class="item" effect="dark" content="求和" placement="bottom">
+          <el-tooltip class="item" effect="dark" content="平均值" placement="bottom">
             <span class="icon-btn">
+              <i class="iconfont">&#xe667;</i>
+            </span>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="求和" placement="bottom">
+            <span class="icon-btn" @click="_calAdd()">
               <i class="iconfont">&#xe643;</i>
             </span>
           </el-tooltip>
@@ -113,10 +133,14 @@
       </div>
     </div>
 
+    <!-- 函数列表 -->
     <el-dialog title="函数列表" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="类别" :label-width="formLabelWidth">
-          <el-input v-model="form.name" auto-complete="off"></el-input>
+          <el-select v-model="value8" filterable placeholder="请选择" size="large">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="函数" :label-width="formLabelWidth">
           <el-select v-model="form.region" placeholder="请选择活动区域">
@@ -130,6 +154,61 @@
         <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 控制面板 -->
+    <div class="control-board-filter" ref="controlBoard">
+      <div class="filter-inner">
+        <div class="filter-inner-drag" style="cursor:move;" ref="dragmunu" @mousedown.stop.prevent="dragThing">
+          <span class="text" style="cursor:pointer;">分析面板</span>
+          <el-tooltip class="item" effect="dark" content="最小化" placement="bottom">
+            <span class="min iconfont" style="cursor:pointer;" @click.stop.prevent="ControlBoardShowThing()">&#xe600;</span>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="开始筛选" placement="bottom">
+            <span class="compl iconfont" style="cursor:pointer;">&#xe62d;</span>
+          </el-tooltip>
+        </div>
+        <transition name="fold">
+          <div class="filter-inner-content" v-show="ControlBoardShow">
+            <!-- 行 -->
+            <div class="filter-inner-content-item">
+              <div class="item-bar">列&nbsp;
+                <el-tooltip class="item" effect="dark" content="拖拽行中名称添加筛选条件" placement="bottom">
+                  <i class="iconfont" style="font-size:14px;cursor:pointer;">&#xe62f;</i>
+                </el-tooltip>
+              </div>
+              <div class="item-content dustbin" data="1">
+                <ul class="">
+                  <li class="member" v-for="(item,index) in newColList" :key="index">{{item.name}}
+                    <i class="iconfont" @click.stop.prevent="deleteIndex(item)">&#xe617;</i>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- 列 -->
+            <div class="filter-inner-content-item">
+              <div class="item-bar">行&nbsp;
+                <el-tooltip class="item" effect="dark" content="拖拽列中名称添加筛选条件" placement="bottom">
+                  <i class="iconfont" style="font-size:14px;cursor:pointer;">&#xe62f;</i>
+                </el-tooltip>
+              </div>
+              <div class="item-content">
+                <ul class="">
+                  <li class="member">日期</li>
+                </ul>
+              </div>
+            </div>
+            <!-- 最后结果 -->
+            <div class="filter-inner-content-item" style="height:127px;">
+              <div class="item-bar">结果
+                <el-tooltip class="item" effect="dark" content="最后结果" placement="bottom">
+                  <i class="iconfont" style="font-size:14px;cursor:pointer;">&#xe62f;</i>
+                </el-tooltip>
+              </div>
+              <div class="result">我是最后结果</div>
+            </div>
+          </div>
+        </transition>
+      </div>
+    </div>
   </aside>
 </template>
 <script>
@@ -138,11 +217,20 @@ import '../../assets/js/lib/handsontable.full.min.css'
 export default {
   data() {
     return {
+      seleArr: [], // 用户选中的部分进行保存
+      colsList: [{
+        'name': "北京", 'age': true
+      }, {
+        'name': "天津", 'age': true
+      }, {
+        'name': "上海", 'age': true
+      }],
+      newColList: [], // 保存用户投放区数据
+      ControlBoardShow: true, // 是否显示控制面板
       currentIndex: 1, // 保存当前页数
       dataVal: [], // 保存后台返回的表格数据
       hot: Object, // 保存表格对象
       flagOfsel: false, // 用来判断是否是备选中的状态，如果是true，就是被选中的状态，所以就在当前行或列添加，如果是false，就默认在第一行添加行或列
-
       startRow: 0, // 开始行
       startCol: 0, //开始列
       endRow: 0,//结束行
@@ -163,28 +251,75 @@ export default {
   },
   mounted() {
     let _this = this;
+    let lis = document.querySelectorAll('li.itemlist');
+    let dustbin = document.querySelector('.dustbin');
+    let element = '';
+    let index = 0;
+    for (let i = 0; i < lis.length; i++) {
+      lis[i].ondragstart = function(ev) {
+        ev.dataTransfer.effectAllowed = "move";
+        ev.dataTransfer.setData("text", ev.target.innerHTML);
+        ev.dataTransfer.setDragImage(ev.target, 0, 0);
+        index = ev.target.getAttribute('data-index');
+        return true;
+      };
+      lis[i].ondragend = function(ev) {
+        ev.dataTransfer.clearData("text");
+        return false
+      };
+    }
+
+    dustbin.ondragover = function(ev) {
+      /*拖拽元素在目标元素头上移动的时候*/
+      ev.preventDefault();
+      return true;
+    };
+    dustbin.ondragenter = function(ev) {
+      /*拖拽元素进入目标元素头上的时候*/
+      console.dir(ev + '进入了');
+      // console.log(ev.target.getAttribute('data'));
+      return true;
+    };
+    dustbin.ondrop = function(ev) {
+      _this.newColList.push(_this.colsList[index]);
+      _this.colsList[index].age = false;
+      return false;
+    };
+
+
+    const containerTop = document.querySelector('.left-com-bottom .top');
+    this.Ps.initialize(containerTop, {
+      wheelSpeed: 2,
+      wheelPropagation: true,
+      minScrollbarLength: 20,
+      suppressScrollX: true
+    });
+    const containerBottom = document.querySelector('.left-com-bottom .bottom');
+    this.Ps.initialize(containerBottom, {
+      wheelSpeed: 2,
+      wheelPropagation: true,
+      minScrollbarLength: 20,
+      suppressScrollX: true
+    });
+
     // 初始化表格
     _this.InitHot(document.querySelector('#example'), this.hotSeeting);
     _this.hot.addHook('afterSelectionEnd', function(startRow, startCol, endRow, endCol) { //选中表格鼠标抬时触发 r行，c列
-      // console.log(`开始${r}+${c}+${r1}+${c2}`);
       _this.flagOfsel = true;
       _this.startRow = startRow;
       _this.startCol = startCol;
       _this.endRow = endRow;
       _this.endCol = endCol;
 
-      let big = _this.hot.getValue(startRow, startCol, endRow, endCol);// 获取到一个格子的值
-      let one = _this.hot.getData(startRow, startCol, endRow, endCol);
-
+      // let big = _this.hot.getValue(startRow, startCol, endRow, endCol);// 获取到一个格子的值
+      let data = _this.hot.getData(startRow, startCol, endRow, endCol);
       let arr = [];
-      for (let i = 0; i < one.length; i++) {
-        for (let j = 0; j < one[i].length; j++) {
-          console.log('这是数字' + !isNaN(one[i][j]));
-          arr.push(one[i][j]);
+      for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < data[i].length; j++) {
+          arr.push(data[i][j]);
         }
-      }
-      console.log('被选中的值' + arr);//选中结束后拿到所有被选中的值
-      _this.arr = arr;
+      };
+      _this.seleArr = arr;
     });
 
     // 搜索事件
@@ -196,7 +331,56 @@ export default {
     };
   },
   methods: {
-
+    deleteIndex(item) {
+      let _this = this;
+      let len = _this.newColList.length,
+      index = -1,
+      newindex = -1;
+      for (let i = 0;i <len;i++){
+        if(_this.newColList[i] === item){
+         newindex = i;
+        }
+      }
+      _this.newColList.splice(newindex,1);
+      for(let j = 0;j<_this.colsList.length;j++){
+        if(item === _this.colsList[j]){
+          index = j;
+        }
+      }
+      console.log(_this.colsList[index]);
+       _this.colsList[index].age = true;
+      // console.log(contains(item, _this.newColList));
+      // console.log(_this.newColList);
+    },
+    ControlBoardShowThing() {
+      this.ControlBoardShow =
+        !this.ControlBoardShow;
+    },
+    dragThing(e) {
+      let box = this.$refs.controlBoard;
+      let diffX = e.clientX - box.offsetLeft;
+      let diffY = e.clientY - box.offsetTop;
+      document.onmousemove = function(e) {
+        let left = e.clientX - diffX;
+        let top = e.clientY - diffY;
+        if (left < 0) {
+          left = 0;
+        } else if (left > window.innerWidth - box.offsetWidth) {
+          left = window.innerWidth - box.offsetWidth;
+        }
+        if (top < 0) {
+          top = 0;
+        } else if (top > window.innerHeight - box.offsetHeight) {
+          top = window.innerHeight - box.offsetHeight;
+        }
+        //移动时重新得到物体的距离，解决拖动时出现晃动的现象  
+        box.style.left = left + 'px';
+        box.style.top = top + 'px';
+      }
+      document.onmouseup = function() {
+        document.onmousemove = null;
+      }
+    },
     // 打开提示，常用于主动操作后的反馈提示。与 Notification 的区别是后者更多用于系统级通知的被动提醒。
     openNotice(type, text) {
       if (type === 'alert') {//普通提示
@@ -280,7 +464,6 @@ export default {
     // 打开一个对话框
     _openDialog() {
       let _this = this;
-
     },
 
     // 数据还原到最开始的状态
@@ -303,7 +486,7 @@ export default {
       })
     },
 
-    // 使用公式开始查询计算 
+    // 使用公式开始计算 
     _startRequire() {
 
     },
@@ -404,24 +587,25 @@ export default {
     // 求和操作
     _calAdd() {
       let _this = this;
-      Handsontable.dom.addEvent(document.querySelector('#add'), 'click', function(event) {
-        console.log(_this.hot.getSettings()); //获取对象的配置信息
-        console.log("总过选中了" + _this.doms.length + '个数字');
-        let arr = _this.arr,
-          one;
+      if (_this.flagOfsel) {
+        _this.hot.selectCell(_this.startRow, _this.startCol, _this.endRow, _this.endCol);
+        let arr = _this.seleArr,
+          result = 0;
         for (let i = 0; i < arr.length; i++) {
-          if (!isNaN(arr[i]) === false) {
-            _this.openNotice('error', '无法对非数字进行计算！');
-            return;
+          if (arr[i] === null) {
+            arr[i] = 0;
+          } else {
+            arr[i] = arr[i].replace(/[^0-9]/ig, "");
           }
+          result += parseInt(arr[i]);
         }
-        console.log(arr);
-
-        for (let i = 0; i < arr.length; i++) {
-
-        }
-      })
+        console.log(result);
+      }
     }
+
+    // 求最大值
+    // 求最小值
+    // 求平均值  
   }
 }
 </script>
@@ -469,11 +653,47 @@ export default {
 }
 
 .left-com-bottom {
-  height: calc(100vh - 47px);
+  height: calc(100% - 47px);
   width: 100%;
   background-color: #FAFDFF;
+  font-size: 12px;
 }
 
+.left-com-bottom .top {
+  height: 260px;
+  width: 100%;
+  background: #FFFFFF;
+  border-bottom: 1px solid #ccc;
+}
+
+.left-com-bottom .title {
+  height: 30px;
+  width: 100%;
+  line-height: 30px;
+  background: rgba(0, 0, 0, .1);
+  text-align: left;
+  padding-left: 15px;
+}
+
+.left-com-bottom .bottom {
+  height: calc(100% - 260px);
+  width: 100%;
+  background: #fff;
+  border-top: 1px solid #ccc;
+}
+
+.left-com-bottom .RowMeasure {
+  padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+.left-com-bottom .RowMeasure li {
+  height: 22px;
+  line-height: 22px;
+}
+.left-com-bottom .RowMeasure li .iconfont{
+  font-size: 14px;
+}
 .right-com {
   position: fixed;
   top: 60px;
@@ -592,6 +812,7 @@ export default {
 .right-com-main .main-table {
   height: calc(100% - 26px);
   overflow: hidden;
+  position: relative;
 }
 
 .fx-control .fx-left {
@@ -650,6 +871,127 @@ export default {
 .handsontable .dragdealer .handle {
   -webkit-border-radius: 4px;
   border-radius: 4px;
+}
+
+.control-board-filter {
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  width: 300px;
+  height: 500px;
+  min-width: 300px;
+  min-height: 400px;
+  z-index: 600;
+  user-select: none;
+  font-size: 12px;
+}
+
+.control-board-filter .filter-inner {
+  box-shadow: 0 2px 4px #CCC;
+  border-radius: 4px;
+}
+
+.filter-inner-drag {
+  position: relative;
+  min-height: 26px;
+  border: 1px solid #CACACA;
+  border-radius: 4px 4px 0 0;
+  background: rgba(238, 238, 238, .8);
+}
+
+.filter-inner-drag span {
+  position: absolute;
+}
+
+.filter-inner-drag span.text {
+  left: 5px;
+  top: 7px;
+}
+
+.filter-inner-drag span.min {
+  right: 10px;
+  top: 1px;
+}
+
+.filter-inner-drag span.compl {
+  right: 40px;
+  top: 2px;
+}
+
+.filter-inner-content {
+  background: #F7F7F7;
+  border: 1px solid #CACACA;
+  border-radius: 0 0 5px 5px;
+  border-top: none;
+  height: 481px;
+}
+
+.filter-inner-content-item {
+  min-height: 100px;
+}
+
+.item-bar {
+  border-top-color: #A2A2A2;
+  height: 27px;
+  line-height: 26px;
+  border-bottom: 1px solid #D5D5D5;
+  padding-left: 10px;
+  background: #FDFDFD;
+  color: #888;
+}
+
+.item-content {
+  padding: 1px 0 5px 5px;
+  height: 142px;
+  border-bottom: 1px solid #D5D5D5;
+  overflow: auto;
+}
+
+.item-content>ul {
+  margin: 0;
+  padding: 0;
+  max-height: 200px;
+}
+
+.item-content>ul>li {
+  float: left;
+  line-height: 18px;
+  list-style-type: none;
+  height: 20px;
+  line-height: 20px;
+  display: inline;
+  margin: 4px 5px 0 0;
+  padding: 0 6px;
+  min-width: 70px;
+  max-width: 98%;
+  text-align: center;
+  white-space: nowrap;
+  border-radius: 12px;
+}
+
+li.member {
+  background: #E5F1FF;
+  border: 1px solid #69C;
+  color: #2A6085;
+  display: inline!important;
+  margin-left: 10px;
+}
+
+li.member>.iconfont {
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 5px;
+  color: #75827b;
+}
+
+.fold-enter-active,
+.fold-leave-active {
+  opacity: 0;
+}
+
+.fold-enter,
+.fold-leave-active {
+  transition: opacity 0.5s ease-out;
 }
 </style>
 
