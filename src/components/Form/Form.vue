@@ -11,13 +11,15 @@
         <div class="top" style="overflow:hidden;position:relative;">
           <div class="title">维度</div>
           <ul class="RowMeasure" style="height:800px;">
-            <li class="itemlist" :draggable="item.age" title="拖拽添加" :data-index="index" v-for="(item,index) in colsList" :key="index"><i class="iconfont">&#xe607;</i>{{item.name}}</li>
+            <li class="itemlist itemlist1" :draggable="item.age" title="拖拽添加" :data-index="index"  v-for="(item,index) in colsList" :key="index">
+              <i class="iconfont">&#xe607;</i>{{item.name}}</li>
           </ul>
         </div>
         <div class="bottom" style="overflow:hidden;position:relative;">
           <div class="title">度量</div>
           <ul class="ColMeasure" style="height:800px;">
-            <li>2</li>
+            <li class="itemlist itemlist2" :draggable="item.age" title="拖拽添加" :data-index="index"  v-for="(item,index) in rolsList" :key="index">
+              <i class="iconfont">&#xe607;</i>{{item.name}}</li>
           </ul>
         </div>
       </div>
@@ -137,7 +139,7 @@
     <el-dialog title="函数列表" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="类别" :label-width="formLabelWidth">
-          <el-select v-model="value8" filterable placeholder="请选择" size="large">
+          <el-select v-model="value8" filterable placeholder="请选择">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -175,10 +177,10 @@
                   <i class="iconfont" style="font-size:14px;cursor:pointer;">&#xe62f;</i>
                 </el-tooltip>
               </div>
-              <div class="item-content dustbin" data="1">
+              <div class="item-content dustbin dustbin1" data=1>
                 <ul class="">
                   <li class="member" v-for="(item,index) in newColList" :key="index">{{item.name}}
-                    <i class="iconfont" @click.stop.prevent="deleteIndex(item)">&#xe617;</i>
+                    <i class="iconfont" @click.stop.prevent="deleteIndexCol(item)">&#xe617;</i>
                   </li>
                 </ul>
               </div>
@@ -190,9 +192,11 @@
                   <i class="iconfont" style="font-size:14px;cursor:pointer;">&#xe62f;</i>
                 </el-tooltip>
               </div>
-              <div class="item-content">
+              <div class="item-content dustbin2" data=2>
                 <ul class="">
-                  <li class="member">日期</li>
+                  <li class="member" v-for="(item,index) in newRolList" :key="index">{{item.name}}
+                      <i class="iconfont" @click.stop.prevent="deleteIndexRow(item)">&#xe617;</i>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -225,8 +229,19 @@ export default {
       }, {
         'name': "上海", 'age': true
       }],
-      newColList: [], // 保存用户投放区数据
-      ControlBoardShow: true, // 是否显示控制面板
+      rolsList: [
+        {
+          'name': "广州", 'age': true
+        }, {
+          'name': "深圳", 'age': true
+        }, {
+          'name': "香港", 'age': true
+        }
+      ],
+      newColList: [], // 保存用户投放区域数据 1
+      newRolList: [], // 保存用户投放区域数据 2 
+      dragFlag: -1, // 用来判断是不是指定的投放区域
+      ControlBoardShow: true, // 是否显示控制面板，默认显示
       currentIndex: 1, // 保存当前页数
       dataVal: [], // 保存后台返回的表格数据
       hot: Object, // 保存表格对象
@@ -235,6 +250,8 @@ export default {
       startCol: 0, //开始列
       endRow: 0,//结束行
       endCol: 0,//结束列
+
+
       dialogFormVisible: false,
       form: {
         name: '',
@@ -250,61 +267,25 @@ export default {
     }
   },
   mounted() {
-    let _this = this;
-    let lis = document.querySelectorAll('li.itemlist');
-    let dustbin = document.querySelector('.dustbin');
-    let element = '';
-    let index = 0;
-    for (let i = 0; i < lis.length; i++) {
-      lis[i].ondragstart = function(ev) {
-        ev.dataTransfer.effectAllowed = "move";
-        ev.dataTransfer.setData("text", ev.target.innerHTML);
-        ev.dataTransfer.setDragImage(ev.target, 0, 0);
-        index = ev.target.getAttribute('data-index');
-        return true;
-      };
-      lis[i].ondragend = function(ev) {
-        ev.dataTransfer.clearData("text");
-        return false
-      };
-    }
+    let _this = this,
+      lis1 = document.querySelectorAll('li.itemlist1'),
+      dustbin1 = document.querySelector('div.dustbin1');
+    _this.DRAGTHINGCol(lis1, dustbin1, _this.colsList, _this.newColList,1);
 
-    dustbin.ondragover = function(ev) {
-      /*拖拽元素在目标元素头上移动的时候*/
-      ev.preventDefault();
-      return true;
-    };
-    dustbin.ondragenter = function(ev) {
-      /*拖拽元素进入目标元素头上的时候*/
-      console.dir(ev + '进入了');
-      // console.log(ev.target.getAttribute('data'));
-      return true;
-    };
-    dustbin.ondrop = function(ev) {
-      _this.newColList.push(_this.colsList[index]);
-      _this.colsList[index].age = false;
-      return false;
-    };
-
+    let lis2 = document.querySelectorAll('li.itemlist2'),
+      dustbin2 = document.querySelector('.dustbin2');
+      _this.DRAGTHINGCol(lis2, dustbin2,_this.rolsList, _this.newRolList,2);
 
     const containerTop = document.querySelector('.left-com-bottom .top');
-    this.Ps.initialize(containerTop, {
-      wheelSpeed: 2,
-      wheelPropagation: true,
-      minScrollbarLength: 20,
-      suppressScrollX: true
-    });
+    _this.PsInit(containerTop);
+
     const containerBottom = document.querySelector('.left-com-bottom .bottom');
-    this.Ps.initialize(containerBottom, {
-      wheelSpeed: 2,
-      wheelPropagation: true,
-      minScrollbarLength: 20,
-      suppressScrollX: true
-    });
+    _this.PsInit(containerBottom);
 
     // 初始化表格
     _this.InitHot(document.querySelector('#example'), this.hotSeeting);
-    _this.hot.addHook('afterSelectionEnd', function(startRow, startCol, endRow, endCol) { //选中表格鼠标抬时触发 r行，c列
+    _this.hot.addHook('afterSelectionEnd', function(startRow, startCol, endRow, endCol) {
+      //选中表格鼠标抬时触发 r行，c列
       _this.flagOfsel = true;
       _this.startRow = startRow;
       _this.startCol = startCol;
@@ -323,7 +304,7 @@ export default {
     });
 
     // 搜索事件
-    this._GlobalSearch();
+    _this._GlobalSearch();
 
     // 如果重新加载的话提示用户先保存
     window.onbeforeunload = function() {
@@ -331,26 +312,90 @@ export default {
     };
   },
   methods: {
-    deleteIndex(item) {
+    DRAGTHINGCol(list, dustbin, arr, newArr,flag) {
+      let index = 0,
+        _this = this;
+      for (let i = 0; i < list.length; i++) {
+        list[i].ondragstart = function(ev) {
+          ev.dataTransfer.effectAllowed = "move";
+          ev.dataTransfer.setData("text", ev.target.innerHTML);
+          ev.dataTransfer.setDragImage(ev.target, 0, 0);
+          index = ev.target.getAttribute('data-index');
+          _this.dragFlag = flag;
+          return true;
+        };
+        list[i].ondragend = function(ev) {
+          ev.dataTransfer.clearData("text");
+          return false
+        };
+      };
+      dustbin.ondragover = function(ev) {
+        /*拖拽元素在目标元素头上移动的时候*/
+        ev.preventDefault();
+        return true;
+      };
+      dustbin.ondragenter = function(ev) {
+        let muflag = ev.target.getAttribute('data');
+        if (muflag == _this.dragFlag) {
+          console.log(_this.dragFlag,muflag+'1级');
+          dustbin.ondrop = function(ev) {
+            newArr.push(arr[index]);
+            arr[index].age = false;
+            return false;
+          };
+        } else {
+          dustbin.ondrop = null;
+        }
+        return true;
+      };
+    },
+    // 初始化滚动条
+    PsInit(dom) {
+      let _this = this;
+      _this.Ps.initialize(dom, {
+        wheelSpeed: 2,
+        wheelPropagation: true,
+        minScrollbarLength: 20,
+        suppressScrollX: true
+      })
+    },
+    // 投放区待选条删除1
+    deleteIndexCol(item) {
       let _this = this;
       let len = _this.newColList.length,
-      index = -1,
-      newindex = -1;
-      for (let i = 0;i <len;i++){
-        if(_this.newColList[i] === item){
-         newindex = i;
+        index = -1,
+        newindex = -1;
+      for (let i = 0; i < len; i++) {
+        if (_this.newColList[i] === item) {
+          newindex = i;
         }
       }
-      _this.newColList.splice(newindex,1);
-      for(let j = 0;j<_this.colsList.length;j++){
-        if(item === _this.colsList[j]){
+      _this.newColList.splice(newindex, 1);
+      for (let j = 0; j < _this.colsList.length; j++) {
+        if (item === _this.colsList[j]) {
           index = j;
         }
+      };
+      _this.colsList[index].age = true;
+    },
+    // 投放区待选条删除2
+    deleteIndexRow(item){
+      let _this = this;
+      let len = _this.newRolList.length,
+      index = -1,
+      newindex = -1;
+       for (let i = 0; i < len; i++) {
+        if (_this.newRolList[i] === item) {
+          newindex = i;
+        }
       }
-      console.log(_this.colsList[index]);
-       _this.colsList[index].age = true;
-      // console.log(contains(item, _this.newColList));
-      // console.log(_this.newColList);
+      _this.newRolList.splice(newindex, 1);
+      for (let j = 0; j < _this.rolsList.length; j++) {
+        if (item === _this.rolsList[j]) {
+          index = j;
+        }
+      };
+      _this.rolsList[index].age = true;
     },
     ControlBoardShowThing() {
       this.ControlBoardShow =
@@ -682,18 +727,26 @@ export default {
   border-top: 1px solid #ccc;
 }
 
-.left-com-bottom .RowMeasure {
+.left-com-bottom .RowMeasure,
+.ColMeasure {
   padding: 10px 20px;
   box-sizing: border-box;
 }
 
-.left-com-bottom .RowMeasure li {
+.left-com-bottom .RowMeasure,
+.ColMeasure li {
   height: 22px;
   line-height: 22px;
 }
-.left-com-bottom .RowMeasure li .iconfont{
+
+.left-com-bottom .RowMeasure li .iconfont {
   font-size: 14px;
 }
+
+.left-com-bottom .ColMeasure li .iconfont {
+  font-size: 14px;
+}
+
 .right-com {
   position: fixed;
   top: 60px;
