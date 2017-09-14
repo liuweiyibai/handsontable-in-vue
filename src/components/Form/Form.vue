@@ -310,6 +310,7 @@ export default {
     window.onbeforeunload = function() {
       return null;
     };
+    console.log(_this.$ajax);
   },
   methods: {
     DRAGTHINGCol(list, dustbin, arr, newArr,flag) {
@@ -590,14 +591,6 @@ export default {
           manualColumnResize: true,
           manualRowResize: true,
           mergeCells: true, // 合并单元格
-          // 发生更改自定保存数据
-          afterChange(change, source) {// 完成文字的输入就会触发该函数
-            if (source == 'loadData') return //第一次加载也会触发需要判断
-            else {
-              let two = _this.hot.getData();
-              // _this.dataVal = two;// 如果发生改变就保存
-            }
-          }
         }
       this.hot = new Handsontable(dom, defSettging);
       // seeting == Object ? this.hot = new Handsontable(dom, seeting) : this.hot = new Handsontable(dom, defSettging)

@@ -3,6 +3,7 @@ import App from './App'
 import router from './router'
 import echarts from 'echarts'
 import ElementUI from 'element-ui'
+import axios from 'axios'
 import 'element-ui/lib/theme-default/index.css'
 
 
@@ -15,6 +16,7 @@ Vue.use(ElementUI);
 Vue.config.productionTip = false
 Vue.prototype.echarts = echarts
 Vue.prototype.Ps = Ps;
+Vue.prototype.$ajax = axios;
 
 
 /* eslint-disable no-new */
