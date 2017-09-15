@@ -32,7 +32,7 @@
             <div data-type="button" class="data-button btn2">
               <router-link to="/InstrumentBoard">图表</router-link>
             </div>
-            <div data-type="button" class="data-button btn3">重置数据</div>
+            <div data-type="button" class="data-button btn3" @click.stop.prevent="_analyiseRestart">重置数据</div>
           </div>
           <div class="left-tab">
             <el-tooltip class="item" effect="dark" content="保存" placement="bottom">
@@ -169,7 +169,7 @@
           </el-tooltip>
         </div>
         <transition name="fold">
-          <div class="filter-inner-content" v-show="ControlBoardShow">
+          <div class="filter-inner-content" v-if="ControlBoardShow">
             <!-- 行 -->
             <div class="filter-inner-content-item">
               <div class="item-bar">列&nbsp;
@@ -216,7 +216,8 @@
   </aside>
 </template>
 <script>
-document.onselectstart = function() { return false; }
+document.onselectstart = function() { return false; };
+window.onbeforeunload = function() { return null; };  // 如果重新加载的话提示用户先保存
 import '../../assets/js/lib/handsontable.full.min.css'
 export default {
   data() {
@@ -267,6 +268,8 @@ export default {
     }
   },
   mounted() {
+    console.log(this.$route.query);
+    console.log(this.$route);
     let _this = this,
       lis1 = document.querySelectorAll('li.itemlist1'),
       dustbin1 = document.querySelector('div.dustbin1');
@@ -306,10 +309,6 @@ export default {
     // 搜索事件
     _this._GlobalSearch();
 
-    // 如果重新加载的话提示用户先保存
-    window.onbeforeunload = function() {
-      return null;
-    };
     console.log(_this.$ajax);
   },
   methods: {
@@ -548,7 +547,7 @@ export default {
           minRows: 20,
           manualColumnFreeze: true,
           autoColumnSize: true,
-          fixedRowsBottom: 1,
+          fixedRowsBottom: 2,
           search: true,// 启用搜索
           autoWrapRow: true, //自动换行
           copyPaste: true,

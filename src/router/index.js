@@ -2,12 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 Vue.use(Router);
-/* 配置路由按需加载 */
-const FormComponent = (resolve) => {
-  import ('@/components/FormComponent').then((module) => {
-    resolve(module);
-  })
-}
 
 const uploadData = (resolve) => {
   import ('@/components/uploadData/uploadData').then((module) => {
@@ -17,12 +11,6 @@ const uploadData = (resolve) => {
 
 const start = (resolve) => {
   import ('@/components/start/start').then((module) => {
-    resolve(module);
-  })
-}
-
-const userMine = (resolve) => {
-  import ('@/components/userMine').then((module) => {
     resolve(module);
   })
 }
@@ -48,8 +36,8 @@ const InstrumentBoard =  (resolve) => {
 export default new Router({
   mode: 'history',
   routes: [{
-      path: "/",
-      name: 'root',
+      path: "/Form",
+      name: 'Form',
       component: Form
     },
     {
@@ -62,22 +50,13 @@ export default new Router({
       name: 'uploadData ',
       component: uploadData
     }, {
-      path: "/table",
-      name: "FormComponent",
-      component: FormComponent
-    }, {
       path: "/start",
       name: "start",
       component: start
-    }, {
-      path: '/user-mine',
-      name: "userMine",
-      component: userMine
     }, {
       path: "/setting",
       name: "setting",
       component: setting
     }
-
   ]
 })

@@ -14,9 +14,14 @@
             </el-input>
           </div>
           <div class="tabbar">
-            <el-upload ref='upload' class="upload-demo" :show-file-list="false" action="http://www.baidu.com" :on-preview="handlePreview" :on-remove="handleRemove" :on-success="fileSuccess" :before-upload="beforeAvatarUpload" :on-progress="showLayer" :on-error="open">
+            <el-upload class="upload-demo"
+             action="https://jsonplaceholder.typicode.com/posts/" 
+             :on-preview="handlePreview" 
+             :on-remove="handleRemove"
+             :show-file-list='false'>
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
+            <!-- <el-button size="small" type="primary" @click="dialogVisible = true">点击上传</el-button> -->
           </div>
         </div>
         <div class="main">
@@ -31,18 +36,38 @@
             </el-table-column>
             <el-table-column label="操作" min-width="20%">
               <template scope="scope">
-                <el-button @click="handleClick(scope.$index,scope.row.number)" type="text" size="small">查看</el-button>
-                <el-button type="text" size="small">编辑</el-button>
+                <el-button @click="handleClickToForm(scope.$index,scope.row.number)" type="text" size="small">表格分析</el-button>
+                <el-button @click="handleClickToInstrumentBoard()" type="text" size="small">仪表盘分析</el-button>
               </template>
             </el-table-column>
           </el-table>
         </div>
         <div class="bottom"></div>
       </div>
+      <!-- 上传文件弹层 -->
+      <div id="dialogUpload">
+        <el-dialog title="新建数据源" :visible.sync="dialogVisible" size="tiny" :before-close="handleClose">
+          <div class="dialog-top" title="本地csv文件">
+            <div class="top">
+              <el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false">
+                <i class="iconfont">&#xe68c;</i>
+              </el-upload>
+            </div>
+            <div class="top">
+              <i class="iconfont">&#xe614;</i>
+            </div>
+          </div>
+          <div slot="footer" class="dialog-footer" style="text-align: center;">
+            <div class="txt">建议在chrom下进行文件上传</div>
+            <div class="txt">支持文件CSV/TXT格式文件，文件大小在3M</div>
+          </div>
+        </el-dialog>
+      </div>
     </div>
   </div>
 </template>
 <script>
+import {MathRound} from '../../assets/js/common/MathRound'
 export default {
   data() {
     return {
@@ -66,7 +91,8 @@ export default {
         name: '王小虎',
         address: '上海市普陀区金沙江路 1516 弄',
         number: 100000
-      }]
+      }],
+      dialogVisible: false
     }
   },
   methods: {
@@ -88,9 +114,12 @@ export default {
       // 163317  160k
       console.log('loading')
     },
-    handleClick(one, two) {
-      console.log(one);
-      console.log(two);
+    handleClickToForm(one, two) {
+      let pwd = one + " "+ MathRound(3);
+      this.$router.push({ path: '/Form', params: { userId: 1 }, query: { pwd: pwd } });
+    },
+    handleClickToInstrumentBoard(){
+
     }
   }
 }
@@ -144,12 +173,6 @@ export default {
 
 
 
-
-
-
-
-
-
 /*这里是header部分的样式表*/
 
 .detail-addFile {
@@ -179,5 +202,35 @@ export default {
   height: 28px;
   background: #FFF;
   margin: 10px 20px;
+}
+
+.dialog-top {
+  padding: relative;
+}
+
+.dialog-top .top:first-child {
+  height: 87px;
+  width: 118px;
+  position: absolute;
+  top: 50px;
+  left: 35%;
+  text-align: center;
+  line-height: 87px;
+  margin-bottom: 10px;
+}
+
+.dialog-top .top .iconfont {
+  font-size: 36px;
+  cursor: pointer;
+}
+
+.dialog-footer .txt {
+  line-height: 1;
+  font-size: 14px;
+  color: #9E9E9E;
+}
+
+.dialog-footer .txt:first-child {
+  margin-bottom: 5px;
 }
 </style>
