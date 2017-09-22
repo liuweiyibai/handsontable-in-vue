@@ -3,22 +3,18 @@
     <div class="addFileWraper">
       <div class="nav-addFile">
         <ul class="nav">
-          <li class="active">数据表</li>
+          <li class="{active=show==1?true:false}">数据表</li>
           <li>仪表盘</li>
         </ul>
       </div>
       <div class="detail-addFile">
         <div class="header">
           <div class="search-bar">
-            <el-input size="small" placeholder="输入关键词" icon="search" v-model="input2" :on-icon-click="handleIconClick">
+            <el-input size="small" placeholder="输入关键词" icon="search" v-model="input" :on-icon-click="handleIconClick">
             </el-input>
           </div>
           <div class="tabbar">
-            <el-upload class="upload-demo"
-             action="https://jsonplaceholder.typicode.com/posts/" 
-             :on-preview="handlePreview" 
-             :on-remove="handleRemove"
-             :show-file-list='false'>
+            <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" :show-file-list='false'>
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
             <!-- <el-button size="small" type="primary" @click="dialogVisible = true">点击上传</el-button> -->
@@ -67,7 +63,7 @@
   </div>
 </template>
 <script>
-import {MathRound} from '../../assets/js/common/MathRound'
+import { MathRound } from '../../assets/js/common/MathRound'
 export default {
   data() {
     return {
@@ -111,14 +107,15 @@ export default {
       console.log('upload before');
     },
     showLayer() {
-      // 163317  160k
       console.log('loading')
     },
+    // 切换到表格
     handleClickToForm(one, two) {
-      let pwd = one + " "+ MathRound(3);
-      this.$router.push({ path: '/Form', params: { userId: 1 }, query: { pwd: pwd } });
+      let pwd = one + " " + MathRound(3);
+      this.$router.push({ path: '/Form', query: { pwd: pwd } });
     },
-    handleClickToInstrumentBoard(){
+    // 切换到仪表盘
+    handleClickToInstrumentBoard() {
 
     }
   }
@@ -169,6 +166,7 @@ export default {
   border-bottom: 3px solid #3bafda;
   color: #4a4a4a;
 }
+
 
 
 

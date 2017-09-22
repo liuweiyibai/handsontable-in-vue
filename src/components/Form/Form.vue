@@ -218,7 +218,7 @@
 <script>
 document.onselectstart = function() { return false; };
 window.onbeforeunload = function() { return null; };  // 如果重新加载的话提示用户先保存
-import '../../assets/js/lib/handsontable.full.min.css'
+import "../../../static/css/handsontable.full.min.css"
 export default {
   data() {
     return {
@@ -268,6 +268,11 @@ export default {
     }
   },
   mounted() {
+    if(!this.$route.query) {
+      console.log(11111111111111111);
+      this.$router.push('/');
+      return;
+    }
     console.log(this.$route.query);
     console.log(this.$route);
     let _this = this,
@@ -309,7 +314,7 @@ export default {
     // 搜索事件
     _this._GlobalSearch();
 
-    console.log(_this.$ajax);
+    console.log(_this.$Http);
   },
   methods: {
     DRAGTHINGCol(list, dustbin, arr, newArr,flag) {
@@ -318,7 +323,7 @@ export default {
       for (let i = 0; i < list.length; i++) {
         list[i].ondragstart = function(ev) {
           ev.dataTransfer.effectAllowed = "move";
-          ev.dataTransfer.setData("text", ev.target.innerHTML);
+          ev.dataTransfer.setData("abcd", ev.target.innerHTML);
           ev.dataTransfer.setDragImage(ev.target, 0, 0);
           index = ev.target.getAttribute('data-index');
           _this.dragFlag = flag;
