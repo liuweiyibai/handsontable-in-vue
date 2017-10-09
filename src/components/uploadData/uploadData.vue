@@ -14,7 +14,7 @@
             </el-input>
           </div>
           <div class="tabbar">
-            <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" :show-file-list='false'>
+            <el-upload class="upload-demo" action="123" :before-upload="beforeUpload" :on-success="fileSuccess">
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
             <!-- <el-button size="small" type="primary" @click="dialogVisible = true">点击上传</el-button> -->
@@ -42,7 +42,7 @@
       </div>
       <!-- 上传文件弹层 -->
       <div id="dialogUpload">
-        <el-dialog title="新建数据源" :visible.sync="dialogVisible" size="tiny" :before-close="handleClose">
+        <el-dialog title="新建数据源" :visible.sync="dialogVisible" size="full" :before-close="handleClose">
           <div class="dialog-top" title="本地csv文件">
             <div class="top">
               <el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false">
@@ -92,6 +92,29 @@ export default {
     }
   },
   methods: {
+    uploadFile() {
+      // this.dialogVisible = true;
+    },
+    beforeUpload(file) {
+      console.log(BASEURL);
+      console.log(file);
+      let fd = new FormData(),
+        url = BASEURL + '/uploadFile';
+      fd.append('file', file);
+      console.log(fd);
+      this.$Http({
+        method: 'post',
+        url: url,
+        data: {
+          userName: 'Fred',
+          multipartFile: fd
+        },
+        header: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      return false;
+    },
     handlePreview() {
       console.log('on priview');
     },
@@ -103,7 +126,7 @@ export default {
     },
     beforeAvatarUpload(fileData) {
       console.log(fileData);
-      console.log(this.$refs.upload.abort);
+      // console.log(this.$refs.upload.abort);
       console.log('upload before');
     },
     showLayer() {
@@ -166,6 +189,13 @@ export default {
   border-bottom: 3px solid #3bafda;
   color: #4a4a4a;
 }
+
+
+
+
+
+
+
 
 
 

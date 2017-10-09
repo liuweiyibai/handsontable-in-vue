@@ -6,20 +6,19 @@ import ElementUI from 'element-ui'
 import axios from 'axios'
 import * as Ps from 'perfect-scrollbar';
 
+
 import './assets/css/index.styl'
 import 'element-ui/lib/theme-default/index.css'
 import ('../static/css/perfect-scrollbar.min.css')
 
 axios.defaults.withCredentials=true;
 Vue.use(ElementUI);
-
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 Vue.prototype.echarts = echarts
 Vue.prototype.Ps = Ps;
 Vue.prototype.$Http = axios;
 
 
-/* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,

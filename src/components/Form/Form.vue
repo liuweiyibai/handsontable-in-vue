@@ -164,9 +164,6 @@
           <el-tooltip class="item" effect="dark" content="最小化" placement="bottom">
             <span class="min iconfont" style="cursor:pointer;" @click.stop.prevent="ControlBoardShowThing()">&#xe600;</span>
           </el-tooltip>
-          <el-tooltip class="item" effect="dark" content="开始筛选" placement="bottom">
-            <span class="compl iconfont" style="cursor:pointer;">&#xe62d;</span>
-          </el-tooltip>
         </div>
         <transition name="fold">
           <div class="filter-inner-content" v-if="ControlBoardShow">
@@ -200,15 +197,11 @@
                 </ul>
               </div>
             </div>
-            <!-- 最后结果 -->
-            <div class="filter-inner-content-item" style="height:127px;">
-              <div class="item-bar">结果
-                <el-tooltip class="item" effect="dark" content="最后结果" placement="bottom">
-                  <i class="iconfont" style="font-size:14px;cursor:pointer;">&#xe62f;</i>
-                </el-tooltip>
-              </div>
-              <div class="result">我是最后结果</div>
-            </div>
+            <div class="bottom-control">
+                <div class="bottom-control-item">
+                  <el-button size="small">开始检索</el-button>
+                </div>
+             </div>
           </div>
         </transition>
       </div>
@@ -603,6 +596,7 @@ export default {
     // 保存数据
     _saveData() {
       let saveDatas = this.hot.getData();
+      console.log(this.hot.mergeCells.mergedCellInfoCollection);
       // 加载 loading
       // 拿到数据后并且保存到后端
     },
@@ -928,9 +922,7 @@ export default {
   right: 1px;
   top: 1px;
   width: 300px;
-  height: 500px;
   min-width: 300px;
-  min-height: 400px;
   z-index: 600;
   user-select: none;
   font-size: 12px;
@@ -963,21 +955,11 @@ export default {
   top: 1px;
 }
 
-.filter-inner-drag span.compl {
-  right: 40px;
-  top: 2px;
-}
-
 .filter-inner-content {
   background: #F7F7F7;
   border: 1px solid #CACACA;
   border-radius: 0 0 5px 5px;
   border-top: none;
-  height: 481px;
-}
-
-.filter-inner-content-item {
-  min-height: 100px;
 }
 
 .item-bar {
@@ -1005,11 +987,9 @@ export default {
 
 .item-content>ul>li {
   float: left;
-  line-height: 18px;
-  list-style-type: none;
   height: 20px;
+  list-style-type: none;
   line-height: 20px;
-  display: inline;
   margin: 4px 5px 0 0;
   padding: 0 6px;
   min-width: 70px;
@@ -1033,7 +1013,18 @@ li.member>.iconfont {
   margin-left: 5px;
   color: #75827b;
 }
-
+.bottom-control{
+  padding: 20px 0;
+  line-height: 26px;
+  padding-left: 10px;
+  color: #888;
+  position: relative;
+}
+.bottom-control .bottom-control-item{
+  position: absolute;
+  right: 10px;
+  top: 5px;
+}
 .fold-enter-active,
 .fold-leave-active {
   opacity: 0;
