@@ -2,7 +2,10 @@
 
 > A Excel of Vue
 
-## Build Setup
+## 启动项目
+
+- 安装依赖
+- 项目启动
 
 ``` bash
 # install dependencies
@@ -18,4 +21,8 @@ npm run build
 npm run build --report
 ```
 
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+### Vue数据统计项目
+
+- 使用handsontable + elementUI + vue进行搭建
+
+- 对部分handsontable功能进行细化自定义
