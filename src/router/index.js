@@ -8,15 +8,8 @@ const uploadData = (resolve) => {
     resolve(module);
   })
 }
-
-const start = (resolve) => {
-  import ('@/components/start/start').then((module) => {
-    resolve(module);
-  })
-}
-
-const setting = (resolve) => {
-  import ('@/components/setting/setting').then((module) => {
+const addFile = (resolve) => {
+  import ('@/components/uploadData/addFile').then((module) => {
     resolve(module);
   })
 }
@@ -35,25 +28,26 @@ const InstrumentBoard = (resolve) => {
 
 export default new Router({
   mode: 'history',
-  routes: [{
-    path: "/Form",
-    name: 'Form',
-    component: Form
-  }, {
-    path: "/InstrumentBoard",
-    name: "InstrumentBoard",
-    component: InstrumentBoard
-  }, {
-    path: '/upload-data',
-    name: 'uploadData ',
-    component: uploadData
-  }, {
-    path: "/start",
-    name: "start",
-    component: start
-  }, {
-    path: "/setting",
-    name: "setting",
-    component: setting
-  }]
+  routes: [
+    {
+      path: "/",
+      name: "Root",
+      component: uploadData
+    }, {
+      path: "/Form",
+      name: 'Form',
+      component: Form
+    }, {
+      path: "/InstrumentBoard",
+      name: "InstrumentBoard",
+      component: InstrumentBoard
+    }, {
+      path: '/uploadData',
+      name: 'uploadData ',
+      component: uploadData
+    },{
+      path: "/uploadData/addFile",
+      component: addFile
+    }
+  ]
 })

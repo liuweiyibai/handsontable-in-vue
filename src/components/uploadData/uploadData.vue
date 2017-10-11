@@ -3,24 +3,20 @@
     <div class="addFileWraper">
       <div class="nav-addFile">
         <ul class="nav">
-          <li class="{active=show==1?true:false}">数据表</li>
-          <li>仪表盘</li>
+          <li class="{active=show==1?true:false}">已有数据源</li>
         </ul>
       </div>
       <div class="detail-addFile">
         <div class="header">
           <div class="search-bar">
-            <el-input size="small" placeholder="输入关键词" icon="search" v-model="input" :on-icon-click="handleIconClick">
+            <el-input size="small" placeholder="输入关键词" icon="search" :on-icon-click="handleIconClick">
             </el-input>
           </div>
           <div class="tabbar">
-            <el-upload class="upload-demo" action="123" :before-upload="beforeUpload" :on-success="fileSuccess">
-              <el-button size="small" type="primary">点击上传</el-button>
-            </el-upload>
-            <!-- <el-button size="small" type="primary" @click="dialogVisible = true">点击上传</el-button> -->
+            <el-button size="small" type="primary" @click="dialogVisible = true">选择数据源</el-button>
           </div>
         </div>
-        <div class="main">
+        <div class="{main,active=show==1?true:false}">
           <el-table :data="tableData" style="width: 100%">
             <el-table-column prop="date" label="名称" min-width="20%">
             </el-table-column>
@@ -38,23 +34,39 @@
             </el-table-column>
           </el-table>
         </div>
-        <div class="bottom"></div>
+        <div class="{main2,active=show==2?true:false}">
+
+        </div>
       </div>
       <!-- 上传文件弹层 -->
       <div id="dialogUpload">
-        <el-dialog title="新建数据源" :visible.sync="dialogVisible" size="full" :before-close="handleClose">
-          <div class="dialog-top" title="本地csv文件">
-            <div class="top">
-              <el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false">
-                <i class="iconfont">&#xe68c;</i>
-              </el-upload>
-            </div>
-            <div class="top">
-              <i class="iconfont">&#xe614;</i>
+        <el-dialog title="新建数据源" :visible.sync="dialogVisible" size="big">
+          <div class="dialog-top" title="本地数据文件">
+            <div class="img-content">
+              <router-link to="/uploadData/addFile">
+                <div class="top-img1">
+                  <div class="img">
+                    <img src="../../assets/img/db_46_big.png" alt="" style="width:100%;height:100%;">
+                  </div>
+                  <p class="img-text">
+                    CSV文件上传
+                  </p>
+                </div>
+              </router-link>
+              <router-link to="/uploadData/addFile">
+                <div class="top-img1">
+                  <div class="img">
+                    <img src="../../assets/img/db_47_big.png" alt="" style="width:100%;height:100%;">
+                  </div>
+                  <p class="img-text">
+                    TXT文件上传
+                  </p>
+                </div>
+              </router-link>
             </div>
           </div>
           <div slot="footer" class="dialog-footer" style="text-align: center;">
-            <div class="txt">建议在chrom下进行文件上传</div>
+            <div class="txt">建议在chrome下进行文件上传</div>
             <div class="txt">支持文件CSV/TXT格式文件，文件大小在3M</div>
           </div>
         </el-dialog>
@@ -92,50 +104,14 @@ export default {
     }
   },
   methods: {
-    uploadFile() {
-      // this.dialogVisible = true;
-    },
-    beforeUpload(file) {
-      console.log(BASEURL);
-      console.log(file);
-      let fd = new FormData(),
-        url = BASEURL + '/uploadFile';
-      fd.append('file', file);
-      console.log(fd);
-      this.$Http({
-        method: 'post',
-        url: url,
-        data: {
-          userName: 'Fred',
-          multipartFile: fd
-        },
-        header: {
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      })
-      return false;
-    },
-    handlePreview() {
-      console.log('on priview');
-    },
-    handleRemove() {
-      console.log('on file remove');
-    },
-    fileSuccess() {
-      console.log('fileupload success');
-    },
-    beforeAvatarUpload(fileData) {
-      console.log(fileData);
-      // console.log(this.$refs.upload.abort);
-      console.log('upload before');
-    },
-    showLayer() {
-      console.log('loading')
+    // 表格的搜索
+    handleIconClick(data) {
+      console.log(data);
     },
     // 切换到表格
     handleClickToForm(one, two) {
-      let pwd = one + " " + MathRound(3);
-      this.$router.push({ path: '/Form', query: { pwd: pwd } });
+      let pwd = one + MathRound(3);
+      this.$router.push({ path: '/Form', query: { pwd: pwd }, params: { name: "nitem" } });
     },
     // 切换到仪表盘
     handleClickToInstrumentBoard() {
@@ -148,7 +124,7 @@ export default {
 .container-app {
   width: auto;
   height: 100vh;
-  margin: 50px auto;
+  margin: 60px auto;
 }
 
 .addFileWraper {
@@ -189,6 +165,49 @@ export default {
   border-bottom: 3px solid #3bafda;
   color: #4a4a4a;
 }
+
+#dialogUpload .dialog-top {
+  width: 100%;
+  text-align: center;
+}
+
+#dialogUpload .dialog-top .img-content {
+  width: 100%;
+}
+
+#dialogUpload .dialog-top .img-content .top-img1 {
+  width: 150px;
+  margin: 0 auto;
+  padding: 16px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+#dialogUpload .dialog-top .top-img1 .img {
+  width: 120px;
+  min-height: 120px;
+  min-height: 120px;
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, .1);
+}
+
+#dialogUpload .dialog-top .top-img1 .img-text {
+  color: rgba(10, 18, 32, .87);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  position: absolute;
+  bottom: 21px;
+  left: 30px;
+}
+
+
+
+
+
+
+
+
 
 
 

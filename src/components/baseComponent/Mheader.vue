@@ -9,7 +9,7 @@
           <el-submenu index="2">
             <template slot="title">我的工作台</template>
             <el-menu-item index="2-1">
-              <router-link to="/upload-data">选择数源</router-link>
+              <router-link to="/uploadData">选择数源</router-link>
             </el-menu-item>
             <el-menu-item index="2-2">
               <router-link to="/">数据表</router-link>
@@ -18,7 +18,9 @@
               <router-link to="/InstrumentBoard">仪表盘</router-link>
             </el-menu-item>
           </el-submenu>
-          <el-menu-item index="1">帮助<i class="iconfont">&#xe6af;</i></el-menu-item>
+          <el-menu-item index="1">帮助
+            <i class="iconfont">&#xe6af;</i>
+          </el-menu-item>
         </el-menu>
       </div>
     </nav>
@@ -26,15 +28,15 @@
 </template>
 <script>
 export default {
-  data(){
+  data() {
     return {
       activeIndex2: "100"
     }
   },
-  methods:{
-    handleSelect(){
+  methods: {
+    handleSelect() {
       console.log('我被选中了！');
-      
+
     }
   }
 }
@@ -52,7 +54,7 @@ export default {
   z-index: 600;
   min-width: 1200px;
   padding: 0 10px;
-  font-size: 24px ;
+  font-size: 24px;
 }
 
 .nav-left {

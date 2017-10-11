@@ -11,14 +11,14 @@
         <div class="top" style="overflow:hidden;position:relative;">
           <div class="title">维度</div>
           <ul class="RowMeasure" style="height:800px;">
-            <li class="itemlist itemlist1" :draggable="item.age" title="拖拽添加" :data-index="index"  v-for="(item,index) in colsList" :key="index">
+            <li class="itemlist itemlist1" :draggable="item.age" title="拖拽添加" :data-index="index" v-for="(item,index) in colsList" :key="index">
               <i class="iconfont">&#xe607;</i>{{item.name}}</li>
           </ul>
         </div>
         <div class="bottom" style="overflow:hidden;position:relative;">
           <div class="title">度量</div>
           <ul class="ColMeasure" style="height:800px;">
-            <li class="itemlist itemlist2" :draggable="item.age" title="拖拽添加" :data-index="index"  v-for="(item,index) in rolsList" :key="index">
+            <li class="itemlist itemlist2" :draggable="item.age" title="拖拽添加" :data-index="index" v-for="(item,index) in rolsList" :key="index">
               <i class="iconfont">&#xe607;</i>{{item.name}}</li>
           </ul>
         </div>
@@ -166,7 +166,7 @@
           </el-tooltip>
         </div>
         <transition name="fold">
-          <div class="filter-inner-content" v-if="ControlBoardShow">
+          <div class="filter-inner-content" v-show="ControlBoardShow">
             <!-- 行 -->
             <div class="filter-inner-content-item">
               <div class="item-bar">列&nbsp;
@@ -192,16 +192,16 @@
               <div class="item-content dustbin2" data=2>
                 <ul class="">
                   <li class="member" v-for="(item,index) in newRolList" :key="index">{{item.name}}
-                      <i class="iconfont" @click.stop.prevent="deleteIndexRow(item)">&#xe617;</i>
+                    <i class="iconfont" @click.stop.prevent="deleteIndexRow(item)">&#xe617;</i>
                   </li>
                 </ul>
               </div>
             </div>
             <div class="bottom-control">
-                <div class="bottom-control-item">
-                  <el-button size="small">开始检索</el-button>
-                </div>
-             </div>
+              <div class="bottom-control-item">
+                <el-button size="small">开始检索</el-button>
+              </div>
+            </div>
           </div>
         </transition>
       </div>
@@ -261,21 +261,20 @@ export default {
     }
   },
   mounted() {
-    if(!this.$route.query) {
-      console.log(11111111111111111);
+    if (JSON.stringify(this.$route.query) === "{}") {
       this.$router.push('/');
       return;
     }
-    console.log(this.$route.query);
+    // console.log(JSON.stringify(this.$route.query) === "{}");
     console.log(this.$route);
     let _this = this,
       lis1 = document.querySelectorAll('li.itemlist1'),
       dustbin1 = document.querySelector('div.dustbin1');
-    _this.DRAGTHINGCol(lis1, dustbin1, _this.colsList, _this.newColList,1);
+    _this.DRAGTHINGCol(lis1, dustbin1, _this.colsList, _this.newColList, 1);
 
     let lis2 = document.querySelectorAll('li.itemlist2'),
       dustbin2 = document.querySelector('.dustbin2');
-      _this.DRAGTHINGCol(lis2, dustbin2,_this.rolsList, _this.newRolList,2);
+    _this.DRAGTHINGCol(lis2, dustbin2, _this.rolsList, _this.newRolList, 2);
 
     const containerTop = document.querySelector('.left-com-bottom .top');
     _this.PsInit(containerTop);
@@ -296,8 +295,8 @@ export default {
       // let big = _this.hot.getValue(startRow, startCol, endRow, endCol);// 获取到一个格子的值
       let data = _this.hot.getData(startRow, startCol, endRow, endCol);
       let arr = [];
-      for (let i = 0; i < data.length; i++) {
-        for (let j = 0; j < data[i].length; j++) {
+      for (let i = 0,len = data.length; i < len; i++) {
+        for (let j = 0,lens = data[i].length; j < lens; j++) {
           arr.push(data[i][j]);
         }
       };
@@ -310,10 +309,10 @@ export default {
     console.log(_this.$Http);
   },
   methods: {
-    DRAGTHINGCol(list, dustbin, arr, newArr,flag) {
+    DRAGTHINGCol(list, dustbin, arr, newArr, flag) {
       let index = 0,
         _this = this;
-      for (let i = 0; i < list.length; i++) {
+      for (let i = 0,len = list.length; i < len; i++) {
         list[i].ondragstart = function(ev) {
           ev.dataTransfer.effectAllowed = "move";
           ev.dataTransfer.setData("abcd", ev.target.innerHTML);
@@ -335,7 +334,7 @@ export default {
       dustbin.ondragenter = function(ev) {
         let muflag = ev.target.getAttribute('data');
         if (muflag == _this.dragFlag) {
-          console.log(_this.dragFlag,muflag+'1级');
+          console.log(_this.dragFlag, muflag + '1级');
           dustbin.ondrop = function(ev) {
             newArr.push(arr[index]);
             arr[index].age = false;
@@ -369,7 +368,7 @@ export default {
         }
       }
       _this.newColList.splice(newindex, 1);
-      for (let j = 0; j < _this.colsList.length; j++) {
+      for (let j = 0,len=_this.colsList.length; j < len; j++) {
         if (item === _this.colsList[j]) {
           index = j;
         }
@@ -377,12 +376,12 @@ export default {
       _this.colsList[index].age = true;
     },
     // 投放区待选条删除2
-    deleteIndexRow(item){
+    deleteIndexRow(item) {
       let _this = this;
       let len = _this.newRolList.length,
-      index = -1,
-      newindex = -1;
-       for (let i = 0; i < len; i++) {
+        index = -1,
+        newindex = -1;
+      for (let i = 0; i < len; i++) {
         if (_this.newRolList[i] === item) {
           newindex = i;
         }
@@ -627,7 +626,7 @@ export default {
         _this.hot.selectCell(_this.startRow, _this.startCol, _this.endRow, _this.endCol);
         let arr = _this.seleArr,
           result = 0;
-        for (let i = 0; i < arr.length; i++) {
+        for (let i = 0, len = arr.length; i < len; i++) {
           if (arr[i] === null) {
             arr[i] = 0;
           } else {
@@ -690,7 +689,6 @@ export default {
 
 .left-com-bottom {
   height: calc(100% - 47px);
-  width: 100%;
   background-color: #FAFDFF;
   font-size: 12px;
 }
@@ -706,8 +704,10 @@ export default {
   height: 30px;
   width: 100%;
   line-height: 30px;
+  position: absolute;
+  top: 0;
+  left: 0;
   background: rgba(0, 0, 0, .1);
-  text-align: left;
   padding-left: 15px;
 }
 
@@ -720,6 +720,7 @@ export default {
 
 .left-com-bottom .RowMeasure,
 .ColMeasure {
+  margin-top: 28px;
   padding: 10px 20px;
   box-sizing: border-box;
 }
@@ -773,7 +774,6 @@ export default {
 
 .right-tab .data-button {
   display: inline-block;
-  line-height: 46px;
   cursor: pointer;
   font-size: 14px;
   padding-left: 22px;
@@ -1013,18 +1013,21 @@ li.member>.iconfont {
   margin-left: 5px;
   color: #75827b;
 }
-.bottom-control{
+
+.bottom-control {
   padding: 20px 0;
   line-height: 26px;
   padding-left: 10px;
   color: #888;
   position: relative;
 }
-.bottom-control .bottom-control-item{
+
+.bottom-control .bottom-control-item {
   position: absolute;
   right: 10px;
   top: 5px;
 }
+
 .fold-enter-active,
 .fold-leave-active {
   opacity: 0;
