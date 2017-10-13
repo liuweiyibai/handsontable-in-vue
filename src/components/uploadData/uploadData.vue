@@ -2,9 +2,7 @@
   <div id="addFile" class="container-app">
     <div class="addFileWraper">
       <div class="nav-addFile">
-        <ul class="nav">
-          <li class="{active=show==1?true:false}">已有数据源</li>
-        </ul>
+        <h2>已有数据源</h2>
       </div>
       <div class="detail-addFile">
         <div class="header">
@@ -16,7 +14,7 @@
             <el-button size="small" type="primary" @click="dialogVisible = true">选择数据源</el-button>
           </div>
         </div>
-        <div class="{main,active=show==1?true:false}">
+        <div class="main">
           <el-table :data="tableData" style="width: 100%">
             <el-table-column prop="date" label="名称" min-width="20%">
             </el-table-column>
@@ -33,9 +31,6 @@
               </template>
             </el-table-column>
           </el-table>
-        </div>
-        <div class="{main2,active=show==2?true:false}">
-
         </div>
       </div>
       <!-- 上传文件弹层 -->
@@ -122,32 +117,31 @@ export default {
 </script>
 <style scoped>
 .container-app {
-  width: auto;
-  height: 100vh;
-  margin: 60px auto;
+  height: calc(100vh - 60px);
+  width: 100%;
 }
 
 .addFileWraper {
   padding: 0 10px;
 }
 
-#addFile {
-  padding-top: 26px;
-}
-
 .nav-addFile {
   width: 100%;
-  padding: 0 0 9px;
-  margin: 0;
-  background: #fff;
-  border-bottom: 1px solid #f2f2f2;
+  box-sizing: border-box;
+  box-shadow: 2px 0 3px 0 rgba(0, 0, 0, .1), 1px 0 1px 0 rgba(0, 0, 0, .1);
+  padding-left: 20px;
+  line-height: 56px;
 }
 
-.nav-addFile>.nav {
-  padding-top: 10px;
-  margin-bottom: 0;
-  height: 40px;
-  background-color: #fff;
+.nav-addFile h2 {
+  font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, STHeitiSC-Light, WOL_SB, 'Segoe UI Semibold', 'Segoe UI', Tahoma, Helvetica, 'Microsoft Yahei', sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  margin-left: 24px;
+  color: rgba(10, 18, 32, .64);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .nav-addFile>.nav>li {
@@ -203,23 +197,6 @@ export default {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*这里是header部分的样式表*/
 
 .detail-addFile {
@@ -233,7 +210,6 @@ export default {
   width: 100%;
   height: 50px;
   color: rgb(102, 102, 102);
-  padding-top: 3px;
   display: flex;
   justify-content: space-between;
 }

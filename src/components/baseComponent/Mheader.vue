@@ -43,9 +43,15 @@ export default {
 </script>
 
 <style scoped>
-.default-nav {
+#Mheader {
   box-sizing: border-box;
   height: 60px;
+  width: 100%;
+}
+
+.default-nav {
+  box-sizing: border-box;
+  height: inherit;
   width: 100%;
   border-bottom: 1px solid #465463;
   position: fixed;

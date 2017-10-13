@@ -98,11 +98,11 @@ export default {
   }
 }
 </script>
-<style>
+<style >
 #addFile {
   width: auto;
-  height: 100vh;
-  margin: 60px auto;
+  height: calc(100vh - 60px);
+  box-sizing: border-box;
   padding: 20px 50px;
 }
 

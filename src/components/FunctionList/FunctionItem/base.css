@@ -1,0 +1,70 @@
+.item-detail-function {
+  width: 100%;
+  height: 100%;
+
+}
+
+.item-detail-function .top {
+  height: 56px;
+  width: 100%;
+  box-shadow: 2px 0 3px 0 rgba(0, 0, 0, .1), 1px 0 1px 0 rgba(0, 0, 0, .1);
+}
+
+.item-detail-function .top .content {
+  line-height: 48px;
+  height: 48px;
+  padding-top: 8px;
+  background-color: transparent;
+}
+
+.item-detail-function .top .content h2 {
+  font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, STHeitiSC-Light, WOL_SB, 'Segoe UI Semibold', 'Segoe UI', Tahoma, Helvetica, 'Microsoft Yahei', sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  margin-left: 24px;
+  color: rgba(10, 18, 32, .64);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.item-detail-function .bottom {
+  padding: 20px;
+  box-sizing: border-box;
+}
+.item-detail-function .bottom .img{ 
+  position: relative;
+}
+.item-detail-function .bottom .img,
+.item-detail-function .bottom .list {
+  width: 50%;
+  height: calc(100% - 40px);
+  float: left;
+}
+
+.item-detail-function .bottom .list {
+  padding-top: 60px;
+}
+
+.item-detail-function .bottom .list li {
+  float: left;
+  width: 200px;
+  height: 80px;
+  text-align: center;
+  line-height: 80px;
+  margin-bottom: 22px;
+  margin-left: 22px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #fff;
+  box-shadow: 2px 0 3px 0 rgba(0, 0, 0, .1), 1px 0 1px 0 rgba(0, 0, 0, .1);
+}
+
+.item-detail-function .bottom .list li span {
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, .82);
+  cursor: pointer;
+}
