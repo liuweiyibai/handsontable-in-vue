@@ -98,7 +98,7 @@ export default {
   }
 }
 </script>
-<style >
+<style>
 #addFile {
   width: auto;
   height: calc(100vh - 60px);

@@ -647,7 +647,7 @@ export default {
 <style scoped>
 #main {
   height: calc(100vh - 60px);
-  margin: 60px auto;
+  /* margin: 60px auto; */
   position: relative;
 }
 

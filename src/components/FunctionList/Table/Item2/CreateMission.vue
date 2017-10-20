@@ -1,26 +1,42 @@
 <template>
   <div id="Item2Table">
     <div class="top">
-      <h2>创建算法任务列表</h2>
+      <span class="text-back iconfont icon-back"></span>
+      <h2 class="text-h2">创建算法任务列表</h2>
     </div>
     <div class="content">
       <el-table :data="tableData" border style="width: 100%;overflow:hidden;" max-height="400">
-        <el-table-column label="日期" width="180">
+        <el-table-column label="ID" width="180">
           <template scope="scope">
             <el-icon name="time"></el-icon>
             <span style="margin-left: 10px">{{ scope.row.date }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="姓名" width="180">
+        <el-table-column label="算法名称" width="180">
           <template scope="scope">
               <div slot="reference" class="name-wrapper">
                 <el-tag>{{ scope.row.name }}</el-tag>
               </div>
           </template>
         </el-table-column>
+        <el-table-column label="算法描述" width="180">
+          <template scope="scope">
+              <div slot="reference" class="name-wrapper">
+                <el-tag>{{ scope.row.name }}</el-tag>
+              </div>
+          </template>
+        </el-table-column>
+         <el-table-column label="状态" width="180">
+          <template scope="scope">
+              <div slot="reference" class="name-wrapper">
+                <el-tag>{{ scope.row.name }}</el-tag>
+              </div>
+          </template>
+        </el-table-column>
+
         <el-table-column label="操作">
           <template scope="scope">
-            <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button size="small" @click="handleEdit(scope.$index, scope.row)">创建训练任务</el-button>
             <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -35,7 +51,7 @@ export default {
   data() {
     return {
       tableData: [{
-        date: '2016-05-02',
+        id: '2016-05-02',
         name: '王小虎',
         address: '上海市普陀区金沙江路 1518 弄'
       }, {
@@ -117,6 +133,14 @@ export default {
         address: '上海市普陀区金沙江路 1516 弄'
       }]
     }
+  },
+  methods:{
+    handleEdit(){
+       this.$router.push({
+        path: "/Item2/TraningMission"
+      });
+    }
+  
   }
 }
 </script>
@@ -137,16 +161,6 @@ export default {
   padding-left: 20px;
 }
 
-#Item2Table .top h2 {
-  font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, STHeitiSC-Light, WOL_SB, 'Segoe UI Semibold', 'Segoe UI', Tahoma, Helvetica, 'Microsoft Yahei', sans-serif;
-  font-size: 22px;
-  font-weight: 400;
-  margin-left: 24px;
-  color: rgba(10, 18, 32, .64);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
 
 #Item2Table .content {
   box-sizing: border-box;

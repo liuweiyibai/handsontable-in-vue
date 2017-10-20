@@ -1,0 +1,25 @@
+.table-- {}
+
+.table-- .content {
+    padding: 12px 22px;
+    box-sizing: border-box;
+}
+
+.table-- .top {
+    box-sizing: border-box;
+    width: 100%;
+    height: 56px;
+    box-sizing: border-box;
+    line-height: 56px;
+    box-shadow: 2px 0 3px 0 rgba(0, 0, 0, .1), 1px 0 1px 0 rgba(0, 0, 0, .1);
+    padding-left: 20px;
+}
+
+.table-- .top .text-h2,
+.table-- .top .text-back {
+    display: inline;
+}
+
+.table-- .top .text-back {
+    cursor: pointer;
+}

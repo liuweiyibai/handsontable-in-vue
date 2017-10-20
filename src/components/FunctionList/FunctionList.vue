@@ -8,29 +8,39 @@
             统计任务
           </li>
         </router-link>
-        <router-link to="Item2">
+        <router-link to="/">
           <li class="left-item" :class="{'active':show==2}" @click="changeShow(2)">
             <span class="iconfont icon-suanfa"></span>
             算法任务
           </li>
         </router-link>
-        <router-link to="Item3">
+        <router-link to="/Item3">
           <li class="left-item" :class="{'active':show==3}" @click="changeShow(3)">
             <span class="iconfont icon-shuju"></span>
-            数据管理
+            数据预处理
           </li>
         </router-link>
-        <router-link to="/Item4">
-          <li class="left-item" :class="{'active':show==4}" @click="changeShow(4)">
-            <span class="iconfont icon-lixianxiazai"></span>
-            离线数据处理任务
-          </li>
-        </router-link>
+
+        <li class="left-item" :class="{'active':show==4}" @click="changeShow(4)" style="position:relative;">
+          <span class="iconfont icon-lixianxiazai"></span>
+          数据管理
+          <ul class="left-item-ul">
+            <router-link to="/Item4/Upload">
+              <li class="left-item-ul-li">离线数据上传</li>
+            </router-link>
+            <router-link to="/Item4/Inquire">
+              <li class="left-item-ul-li">离线数据查询</li>
+            </router-link>
+          </ul>
+        </li>
+
         <li class="img"></li>
       </ul>
     </div>
     <div class="list-right">
-      <router-view></router-view>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
     </div>
   </div>
 </template>
@@ -38,7 +48,7 @@
 export default {
   data() {
     return {
-      show: 0
+      show: 2
     }
   },
   mounted() {
@@ -90,7 +100,7 @@ export default {
   font-size: 16px;
 }
 
-#FunctionList .list-left ul li:hover {
+#FunctionList .list-left ul li.left-item:hover {
   background-color: #F3F5F6;
 }
 
@@ -100,5 +110,15 @@ export default {
 
 .active:hover {
   background-color: #FFFFFF;
+}
+
+.left-item-ul {
+  position: absolute;
+  bottom: -113px;
+  right: 60px;
+}
+
+.left-item-ul-li {
+  padding: 10px 20px;
 }
 </style>

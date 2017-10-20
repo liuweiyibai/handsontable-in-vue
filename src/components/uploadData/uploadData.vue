@@ -1,71 +1,71 @@
 <template>
-  <div id="addFile" class="container-app">
-    <div class="addFileWraper">
-      <div class="nav-addFile">
-        <h2>已有数据源</h2>
+  <div class="container-app">
+    <div class="top">
+      <div class="content">
+        <h2>统计任务</h2>
       </div>
-      <div class="detail-addFile">
-        <div class="header">
-          <div class="search-bar">
-            <el-input size="small" placeholder="输入关键词" icon="search" :on-icon-click="handleIconClick">
-            </el-input>
-          </div>
-          <div class="tabbar">
-            <el-button size="small" type="primary" @click="dialogVisible = true">选择数据源</el-button>
-          </div>
+    </div>
+    <div class="Maincontent detail-addFile">
+      <div class="header">
+        <div class="search-bar">
+          <el-input size="small" placeholder="输入关键词" icon="search" :on-icon-click="handleIconClick">
+          </el-input>
         </div>
-        <div class="main">
-          <el-table :data="tableData" style="width: 100%">
-            <el-table-column prop="date" label="名称" min-width="20%">
-            </el-table-column>
-            <el-table-column prop="name" label="所有者" min-width="20%">
-            </el-table-column>
-            <el-table-column prop="province" label="修改时间" min-width="20%">
-            </el-table-column>
-            <el-table-column prop="city" label="数据源" min-width="20%">
-            </el-table-column>
-            <el-table-column label="操作" min-width="20%">
-              <template scope="scope">
-                <el-button @click="handleClickToForm(scope.$index,scope.row.number)" type="text" size="small">表格分析</el-button>
-                <el-button @click="handleClickToInstrumentBoard()" type="text" size="small">仪表盘分析</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+        <div class="tabbar">
+          <el-button size="small" type="primary" @click="dialogVisible = true">选择数据源</el-button>
         </div>
       </div>
-      <!-- 上传文件弹层 -->
-      <div id="dialogUpload">
-        <el-dialog title="新建数据源" :visible.sync="dialogVisible" size="big">
-          <div class="dialog-top" title="本地数据文件">
-            <div class="img-content">
-              <router-link to="/uploadData/addFile">
-                <div class="top-img1">
-                  <div class="img">
-                    <img src="../../assets/img/db_46_big.png" alt="" style="width:100%;height:100%;">
-                  </div>
-                  <p class="img-text">
-                    CSV文件上传
-                  </p>
-                </div>
-              </router-link>
-              <router-link to="/uploadData/addFile">
-                <div class="top-img1">
-                  <div class="img">
-                    <img src="../../assets/img/db_47_big.png" alt="" style="width:100%;height:100%;">
-                  </div>
-                  <p class="img-text">
-                    TXT文件上传
-                  </p>
-                </div>
-              </router-link>
-            </div>
-          </div>
-          <div slot="footer" class="dialog-footer" style="text-align: center;">
-            <div class="txt">建议在chrome下进行文件上传</div>
-            <div class="txt">支持文件CSV/TXT格式文件，文件大小在3M</div>
-          </div>
-        </el-dialog>
+      <div class="main">
+        <el-table :data="tableData" style="width: 100%" border>
+          <el-table-column prop="date" label="名称" width="200">
+          </el-table-column>
+          <el-table-column prop="name" label="所有者" width="200">
+          </el-table-column>
+          <el-table-column prop="province" label="修改时间" width="200">
+          </el-table-column>
+          <el-table-column prop="city" label="数据源" width="150">
+          </el-table-column>
+          <el-table-column label="操作">
+            <template scope="scope">
+              <el-button @click="handleClickToForm(scope.$index,scope.row.number)" type="text" size="small">表格分析</el-button>
+              <el-button @click="handleClickToInstrumentBoard()" type="text" size="small">仪表盘分析</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
       </div>
+    </div>
+    <!-- 上传文件弹层 -->
+    <div id="dialogUpload">
+      <el-dialog title="新建数据源" :visible.sync="dialogVisible" size="big">
+        <div class="dialog-top" title="本地数据文件">
+          <div class="img-content">
+            <router-link to="/uploadData/addFile">
+              <div class="top-img1">
+                <div class="img">
+                  <img src="../../assets/img/db_46_big.png" alt="" style="width:100%;height:100%;">
+                </div>
+                <p class="img-text">
+                  CSV文件上传
+                </p>
+              </div>
+            </router-link>
+            <router-link to="/uploadData/addFile">
+              <div class="top-img1">
+                <div class="img">
+                  <img src="../../assets/img/db_47_big.png" alt="" style="width:100%;height:100%;">
+                </div>
+                <p class="img-text">
+                  TXT文件上传
+                </p>
+              </div>
+            </router-link>
+          </div>
+        </div>
+        <div slot="footer" class="dialog-footer" style="text-align: center;">
+          <div class="txt">建议在chrome下进行文件上传</div>
+          <div class="txt">支持文件CSV/TXT格式文件，文件大小在3M</div>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -119,45 +119,25 @@ export default {
 .container-app {
   height: calc(100vh - 60px);
   width: 100%;
-}
-
-.addFileWraper {
-  padding: 0 10px;
-}
-
-.nav-addFile {
-  width: 100%;
   box-sizing: border-box;
+}
+
+.container-app .top {
+  height: 56px;
+  width: 100%;
   box-shadow: 2px 0 3px 0 rgba(0, 0, 0, .1), 1px 0 1px 0 rgba(0, 0, 0, .1);
-  padding-left: 20px;
-  line-height: 56px;
 }
 
-.nav-addFile h2 {
-  font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, STHeitiSC-Light, WOL_SB, 'Segoe UI Semibold', 'Segoe UI', Tahoma, Helvetica, 'Microsoft Yahei', sans-serif;
-  font-size: 22px;
-  font-weight: 400;
-  margin-left: 24px;
-  color: rgba(10, 18, 32, .64);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+.container-app .top .content {
+  line-height: 48px;
+  height: 48px;
+  padding-top: 8px;
+  background-color: transparent;
 }
 
-.nav-addFile>.nav>li {
-  padding-top: 2px;
-  cursor: pointer;
-  float: left;
-  width: 114px;
-  line-height: 44px;
-  text-align: center;
-  font-size: 16px;
-  color: #9b9b9b;
-}
-
-.nav-addFile>.nav li.active {
-  border-bottom: 3px solid #3bafda;
-  color: #4a4a4a;
+.container-app .Maincontent {
+  padding: 12px 22px;
+  box-sizing: border-box;
 }
 
 #dialogUpload .dialog-top {
@@ -197,12 +177,15 @@ export default {
 
 
 
+
+
+
+
+
+
 /*这里是header部分的样式表*/
 
 .detail-addFile {
-  width: 100%;
-  height: 100%;
-  min-height: 550px;
   position: relative;
 }
 
@@ -224,27 +207,8 @@ export default {
   display: inline-flex;
   height: 28px;
   background: #FFF;
+  box-sizing: border-box;
   margin: 10px 20px;
-}
-
-.dialog-top {
-  padding: relative;
-}
-
-.dialog-top .top:first-child {
-  height: 87px;
-  width: 118px;
-  position: absolute;
-  top: 50px;
-  left: 35%;
-  text-align: center;
-  line-height: 87px;
-  margin-bottom: 10px;
-}
-
-.dialog-top .top .iconfont {
-  font-size: 36px;
-  cursor: pointer;
 }
 
 .dialog-footer .txt {
@@ -254,6 +218,7 @@ export default {
 }
 
 .dialog-footer .txt:first-child {
+  box-sizing: border-box;
   margin-bottom: 5px;
 }
 </style>

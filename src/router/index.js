@@ -55,7 +55,6 @@ const AnalyiseMission = (resolve) => {
   })
 }
 
-
 // 数据管理
 const Item3 = (resolve) => {
   import ('@/components/FunctionList/FunctionItem/Item3').then((module) => {
@@ -69,15 +68,31 @@ const CreateManageMission = (resolve) => {
   })
 }
 // 执行预处理任务
-const BeginManageMission =  (resolve) => {
+const BeginManageMission = (resolve) => {
   import ('@/components/FunctionList/Table/Item3/BeginManageMission').then((module) => {
     resolve(module);
   })
 }
 
+const CommonBaseMissionRequire = (resolve) => {
+  import ('@/components/baseComponent/CommonBaseMissionRequire').then((module) => {
+    resolve(module);
+  })
+}
 
 const Item4 = (resolve) => {
   import ('@/components/FunctionList/FunctionItem/Item4').then((module) => {
+    resolve(module);
+  })
+}
+const Item4Upload = (resolve) => {
+  import ('@/components/FunctionList/Table/Item4/upload').then((module) => {
+    resolve(module);
+  })
+}
+
+const Item4inquireFildListoad = (resolve) => {
+  import ('@/components/FunctionList/Table/Item4/inquireFildList').then((module) => {
     resolve(module);
   })
 }
@@ -99,18 +114,52 @@ export default new Router({
   routes: [
     {
       path: "/",
-      name: "Root",
       component: FunctionList,
       children: [
         {
-          path: "/Item2",
+          path: "/uploadData",
+          name: "uploadData ",
+          component: uploadData
+        }, {
+          path: "/",
+          name: "default",
           component: Item2
+        }, {
+          path: "/Item2/TraningMission",
+          component: TraningMission
+        }, {
+          path: "/Item2/CreateMission",
+          component: CreateMission
+        }, {
+          path: "/Item2/PublishMission",
+          component: PublishMission
+        }, {
+          path: "/Item2/AnalyiseMission",
+          component: AnalyiseMission
         }, {
           path: "/Item3",
           component: Item3
         }, {
+          path: "/Item3/CreateManageMission",
+          component: CreateManageMission
+        }, {
+          path: "/Item3/BeginManageMission",
+          component: BeginManageMission
+        }, {
           path: "/Item4",
-          component: Item4
+          component: Item4,
+          children:[
+            {
+              path:"/Item4/Upload",
+              component:Item4Upload
+            },{
+              path:"/Item4/Inquire",
+              component:Item4inquireFildListoad
+            }
+          ]
+        }, {
+          path: "/CommonBaseMissionRequire",
+          component: CommonBaseMissionRequire
         }
       ]
     }, {
@@ -122,30 +171,8 @@ export default new Router({
       name: "InstrumentBoard",
       component: InstrumentBoard
     }, {
-      path: "/uploadData",
-      name: "uploadData ",
-      component: uploadData
-    }, {
       path: "/uploadData/addFile",
       component: addFile
-    }, {
-      path: "/Item2/CreateMission",
-      component: CreateMission
-    },{
-      path:"/Item2/TraningMission",
-      component:TraningMission
-    },{
-      path:"/Item2/PublishMission",
-      component:PublishMission
-    },{
-      path:"/Item2/AnalyiseMission",
-      component:AnalyiseMission
-    },{
-      path:"/Item3/CreateManageMission",
-      component:CreateManageMission
-    },{
-      path:"/Item3/BeginManageMission",
-      component:BeginManageMission
     }
   ]
 })
