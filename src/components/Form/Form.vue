@@ -3,9 +3,11 @@
     <div class="left-com">
       <div class="left-com-top">
         <span class="name">数据表</span>
-        <el-tooltip class="item" effect="dark" content="新建数据表" placement="bottom">
-          <i class="iconfont">&#xe63b;</i>
-        </el-tooltip>
+          <router-link to="/uploadData">
+            <el-tooltip class="item" effect="dark" content="返回上一级" placement="bottom">
+                <i class="iconfont">&#xe614;</i>
+            </el-tooltip>
+          </router-link>
       </div>
       <div class="left-com-bottom">
         <div class="top" style="overflow:hidden;position:relative;">
@@ -92,8 +94,8 @@
               <i class="iconfont">&#xe684;</i>
             </span>
           </el-tooltip>
-
-          <span class="iconfont icon">&#xe601;</span>
+          <!-- 开始 -->
+          <!-- <span class="iconfont icon">&#xe601;</span> -->
           <el-tooltip class="item" effect="dark" content="最大值" placement="bottom">
             <span class="icon-btn">
               <i class="iconfont">&#xe67c;</i>
@@ -209,31 +211,47 @@
   </aside>
 </template>
 <script>
-document.onselectstart = function() { return false; };
-window.onbeforeunload = function() { return null; };  // 如果重新加载的话提示用户先保存
-import "../../../static/css/handsontable.full.min.css"
+document.onselectstart = function() {
+  return false;
+};// 如果重新加载的话提示用户先保存
+// window.onbeforeunload = function() {
+//   return 'null';
+// }; 
+import "../../../static/css/handsontable.full.min.css";
 export default {
   data() {
     return {
       seleArr: [], // 用户选中的部分进行保存
-      colsList: [{
-        'name': "北京", 'age': true
-      }, {
-        'name': "天津", 'age': true
-      }, {
-        'name': "上海", 'age': true
-      }],
+      colsList: [
+        {
+          name: "北京",
+          age: true
+        },
+        {
+          name: "天津",
+          age: true
+        },
+        {
+          name: "上海",
+          age: true
+        }
+      ],
       rolsList: [
         {
-          'name': "广州", 'age': true
-        }, {
-          'name': "深圳", 'age': true
-        }, {
-          'name': "香港", 'age': true
+          name: "广州",
+          age: true
+        },
+        {
+          name: "深圳",
+          age: true
+        },
+        {
+          name: "香港",
+          age: true
         }
       ],
       newColList: [], // 保存用户投放区域数据 1
-      newRolList: [], // 保存用户投放区域数据 2 
+      newRolList: [], // 保存用户投放区域数据 2
       dragFlag: -1, // 用来判断是不是指定的投放区域
       ControlBoardShow: true, // 是否显示控制面板，默认显示
       currentIndex: 1, // 保存当前页数
@@ -242,49 +260,51 @@ export default {
       flagOfsel: false, // 用来判断是否是备选中的状态，如果是true，就是被选中的状态，所以就在当前行或列添加，如果是false，就默认在第一行添加行或列
       startRow: 0, // 开始行
       startCol: 0, //开始列
-      endRow: 0,//结束行
-      endCol: 0,//结束列
-
+      endRow: 0, //结束行
+      endCol: 0, //结束列
 
       dialogFormVisible: false,
       form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
+        name: "",
+        region: "",
+        date1: "",
+        date2: "",
         delivery: false,
         type: [],
-        resource: '',
-        desc: ''
+        resource: "",
+        desc: ""
       },
-      formLabelWidth: '120px'
-    }
+      formLabelWidth: "120px"
+    };
   },
   mounted() {
     if (JSON.stringify(this.$route.query) === "{}") {
-      this.$router.push('/');
+      this.$router.push("/");
       return;
     }
-    // console.log(JSON.stringify(this.$route.query) === "{}");
-    console.log(this.$route);
     let _this = this,
-      lis1 = document.querySelectorAll('li.itemlist1'),
-      dustbin1 = document.querySelector('div.dustbin1');
+      lis1 = document.querySelectorAll("li.itemlist1"),
+      dustbin1 = document.querySelector("div.dustbin1");
     _this.DRAGTHINGCol(lis1, dustbin1, _this.colsList, _this.newColList, 1);
 
-    let lis2 = document.querySelectorAll('li.itemlist2'),
-      dustbin2 = document.querySelector('.dustbin2');
+    let lis2 = document.querySelectorAll("li.itemlist2"),
+      dustbin2 = document.querySelector(".dustbin2");
     _this.DRAGTHINGCol(lis2, dustbin2, _this.rolsList, _this.newRolList, 2);
 
-    const containerTop = document.querySelector('.left-com-bottom .top');
+    const containerTop = document.querySelector(".left-com-bottom .top");
     _this.PsInit(containerTop);
 
-    const containerBottom = document.querySelector('.left-com-bottom .bottom');
+    const containerBottom = document.querySelector(".left-com-bottom .bottom");
     _this.PsInit(containerBottom);
 
     // 初始化表格
-    _this.InitHot(document.querySelector('#example'), this.hotSeeting);
-    _this.hot.addHook('afterSelectionEnd', function(startRow, startCol, endRow, endCol) {
+    _this.InitHot(document.querySelector("#example"), this.hotSeeting);
+    _this.hot.addHook("afterSelectionEnd", function(
+      startRow,
+      startCol,
+      endRow,
+      endCol
+    ) {
       //选中表格鼠标抬时触发 r行，c列
       _this.flagOfsel = true;
       _this.startRow = startRow;
@@ -295,46 +315,44 @@ export default {
       // let big = _this.hot.getValue(startRow, startCol, endRow, endCol);// 获取到一个格子的值
       let data = _this.hot.getData(startRow, startCol, endRow, endCol);
       let arr = [];
-      for (let i = 0,len = data.length; i < len; i++) {
-        for (let j = 0,lens = data[i].length; j < lens; j++) {
+      for (let i = 0, len = data.length; i < len; i++) {
+        for (let j = 0, lens = data[i].length; j < lens; j++) {
           arr.push(data[i][j]);
         }
-      };
+      }
       _this.seleArr = arr;
     });
 
     // 搜索事件
     _this._GlobalSearch();
-
-    console.log(_this.$Http);
   },
   methods: {
     DRAGTHINGCol(list, dustbin, arr, newArr, flag) {
       let index = 0,
         _this = this;
-      for (let i = 0,len = list.length; i < len; i++) {
+      for (let i = 0, len = list.length; i < len; i++) {
         list[i].ondragstart = function(ev) {
           ev.dataTransfer.effectAllowed = "move";
           ev.dataTransfer.setData("abcd", ev.target.innerHTML);
           ev.dataTransfer.setDragImage(ev.target, 0, 0);
-          index = ev.target.getAttribute('data-index');
+          index = ev.target.getAttribute("data-index");
           _this.dragFlag = flag;
           return true;
         };
         list[i].ondragend = function(ev) {
           ev.dataTransfer.clearData("text");
-          return false
+          return false;
         };
-      };
+      }
       dustbin.ondragover = function(ev) {
         /*拖拽元素在目标元素头上移动的时候*/
         ev.preventDefault();
         return true;
       };
       dustbin.ondragenter = function(ev) {
-        let muflag = ev.target.getAttribute('data');
+        let muflag = ev.target.getAttribute("data");
         if (muflag == _this.dragFlag) {
-          console.log(_this.dragFlag, muflag + '1级');
+          console.log(_this.dragFlag, muflag + "1级");
           dustbin.ondrop = function(ev) {
             newArr.push(arr[index]);
             arr[index].age = false;
@@ -354,7 +372,7 @@ export default {
         wheelPropagation: true,
         minScrollbarLength: 20,
         suppressScrollX: true
-      })
+      });
     },
     // 投放区待选条删除1
     deleteIndexCol(item) {
@@ -368,11 +386,11 @@ export default {
         }
       }
       _this.newColList.splice(newindex, 1);
-      for (let j = 0,len=_this.colsList.length; j < len; j++) {
+      for (let j = 0, len = _this.colsList.length; j < len; j++) {
         if (item === _this.colsList[j]) {
           index = j;
         }
-      };
+      }
       _this.colsList[index].age = true;
     },
     // 投放区待选条删除2
@@ -391,12 +409,11 @@ export default {
         if (item === _this.rolsList[j]) {
           index = j;
         }
-      };
+      }
       _this.rolsList[index].age = true;
     },
     ControlBoardShowThing() {
-      this.ControlBoardShow =
-        !this.ControlBoardShow;
+      this.ControlBoardShow = !this.ControlBoardShow;
     },
     dragThing(e) {
       let box = this.$refs.controlBoard;
@@ -415,29 +432,33 @@ export default {
         } else if (top > window.innerHeight - box.offsetHeight) {
           top = window.innerHeight - box.offsetHeight;
         }
-        //移动时重新得到物体的距离，解决拖动时出现晃动的现象  
-        box.style.left = left + 'px';
-        box.style.top = top + 'px';
-      }
+        //移动时重新得到物体的距离，解决拖动时出现晃动的现象
+        box.style.left = left + "px";
+        box.style.top = top + "px";
+      };
       document.onmouseup = function() {
         document.onmousemove = null;
-      }
+      };
     },
     // 打开提示，常用于主动操作后的反馈提示。与 Notification 的区别是后者更多用于系统级通知的被动提醒。
     openNotice(type, text) {
-      if (type === 'alert') {//普通提示
+      if (type === "alert") {
+        //普通提示
         this.$message(text);
-      } else if (type === 'success') {// 成功的提示
+      } else if (type === "success") {
+        // 成功的提示
         this.$message({
           message: text,
-          type: 'success'
-        })
-      } else if (type === 'warning') {// 提出警告
-        this.$message({
-          message: '警告哦，这是一条警告消息',
-          type: 'warning'
+          type: "success"
         });
-      } else {  // error  错误提示
+      } else if (type === "warning") {
+        // 提出警告
+        this.$message({
+          message: "警告哦，这是一条警告消息",
+          type: "warning"
+        });
+      } else {
+        // error  错误提示
         this.$message.error(text);
       }
     },
@@ -447,11 +468,12 @@ export default {
       let _this = this;
       if (_this.flagOfsel) {
         _this.hot.selectCell(_this.startRow, _this.startCol);
-        _this.hot.alter('insert_row', _this.startRow);
+        _this.hot.alter("insert_row", _this.startRow);
         _this.flagOfsel = false;
       } else {
         _this.hot.selectCell(0, _this.startCol);
-        _this.hot.alter('insert_row', 0); _this.flagOfsel = false;
+        _this.hot.alter("insert_row", 0);
+        _this.flagOfsel = false;
       }
     },
 
@@ -460,25 +482,26 @@ export default {
       let _this = this;
       if (_this.flagOfsel) {
         _this.hot.selectCell(_this.startRow, _this.startCol);
-        _this.hot.alter('insert_col', _this.startCol);
+        _this.hot.alter("insert_col", _this.startCol);
         _this.flagOfsel = false;
       } else {
         _this.hot.selectCell(_this.startRow, 0);
-        _this.hot.alter('insert_col', 0); _this.insert_row = false;
-
+        _this.hot.alter("insert_col", 0);
+        _this.insert_row = false;
       }
     },
 
-    // 删除行  
+    // 删除行
     _deleteRow() {
       let _this = this,
         count = _this.endRow - _this.startRow + 1;
       if (_this.flagOfsel) {
         _this.hot.selectCell(_this.startRow, _this.startCol);
-        _this.hot.alter('remove_row', _this.startRow, count);
+        _this.hot.alter("remove_row", _this.startRow, count);
       } else {
         _this.hot.selectCell(_this.startRow, 0);
-        _this.hot.alter('remove_row', 0); _this.flagOfsel = false;
+        _this.hot.alter("remove_row", 0);
+        _this.flagOfsel = false;
       }
     },
 
@@ -488,9 +511,10 @@ export default {
         count = _this.endCol - _this.startCol + 1;
       if (_this.flagOfsel) {
         _this.hot.selectCell(_this.startRow, _this.startCol);
-        _this.hot.alter('remove_col', _this.startCol, count);
+        _this.hot.alter("remove_col", _this.startCol, count);
       } else {
-        _this.hot.alter('remove_col', 0); _this.flagOfsel = false;
+        _this.hot.alter("remove_col", 0);
+        _this.flagOfsel = false;
       }
     },
 
@@ -498,8 +522,13 @@ export default {
     _deleteSel() {
       let _this = this;
       if (_this.flagOfsel) {
-        _this.hot.selectCell(_this.startRow, _this.startCol, _this.endRow, _this.endCol);
-        _this.hot.getPlugin('copyPaste').cut();
+        _this.hot.selectCell(
+          _this.startRow,
+          _this.startCol,
+          _this.endRow,
+          _this.endCol
+        );
+        _this.hot.getPlugin("copyPaste").cut();
       }
     },
 
@@ -511,33 +540,31 @@ export default {
     // 数据还原到最开始的状态
     _analyiseRestart() {
       let _this = this;
-      this.$confirm('确定还原此报表吗？自定义数据与操作都将丢失（保存报表之后生效）。', {
+      this.$confirm("确定还原此报表吗？自定义数据与操作都将丢失（保存报表之后生效）。", {
         callback: function(data) {
-          if (data === 'confirm') {
+          if (data === "confirm") {
             _this.$message({
-              type: 'success',
-              message: '还原成功!'
-            })
+              type: "success",
+              message: "还原成功!"
+            });
           } else {
             _this.$message({
-              type: 'info',
-              message: '已取消删除'
+              type: "info",
+              message: "已取消删除"
             });
           }
         }
-      })
+      });
     },
 
-    // 使用公式开始计算 
-    _startRequire() {
-
-    },
+    // 使用公式开始计算
+    _startRequire() {},
     InitHot(dom, seeting) {
       let _this = this,
         defSettging = {
-          colHeaders: true,// 列表头
-          rowHeaders: true,//行表头
-          stretchH: 'all', // 是否
+          colHeaders: true, // 列表头
+          rowHeaders: true, //行表头
+          stretchH: "all", // 是否
           startRows: 15,
           startCols: 26,
           minCols: 26,
@@ -545,39 +572,39 @@ export default {
           manualColumnFreeze: true,
           autoColumnSize: true,
           fixedRowsBottom: 2,
-          search: true,// 启用搜索
+          search: true, // 启用搜索
           autoWrapRow: true, //自动换行
           copyPaste: true,
           customBorders: true,
           contextMenu: {
             items: {
-              "row_above": {
+              row_above: {
                 name: "在上面插入行"
               },
-              "row_below": {
+              row_below: {
                 name: "在下面插入行"
               },
-              "col_left": {
+              col_left: {
                 name: "在左侧插入列"
               },
-              "col_right": {
+              col_right: {
                 name: "在右侧插入列"
               },
-              "hsep1": "---------",
-              "undo": {
+              hsep1: "---------",
+              undo: {
                 name: "撤销"
               },
-              "redo": {
+              redo: {
                 name: "恢复"
               },
-              "make_read_only": {
+              make_read_only: {
                 name: "只读"
               },
-              "hsep2": "---------",
-              "mergeCells": {
+              hsep2: "---------",
+              mergeCells: {
                 name: "合并单元格"
               },
-              "freeze_column": {
+              freeze_column: {
                 name: "冻结该列"
               }
             }
@@ -586,8 +613,8 @@ export default {
           manualRowMove: true,
           manualColumnResize: true,
           manualRowResize: true,
-          mergeCells: true, // 合并单元格
-        }
+          mergeCells: true // 合并单元格
+        };
       this.hot = new Handsontable(dom, defSettging);
       // seeting == Object ? this.hot = new Handsontable(dom, seeting) : this.hot = new Handsontable(dom, defSettging)
     },
@@ -604,7 +631,7 @@ export default {
     _GlobalSearch() {
       let _this = this,
         doms = this.$refs.search_ipt;
-      Handsontable.dom.addEvent(doms, 'keyup', function(event) {
+      Handsontable.dom.addEvent(doms, "keyup", function(event) {
         let queryResult = _this.hot.search.query(this.value);
         _this.hot.render();
       });
@@ -613,24 +640,29 @@ export default {
     // 载入数据
     _loadData() {
       let _this = this;
-      Handsontable.dom.addEvent(_this.$refs.btn111, 'click', function(event) {
-        console.log('loadDataing...');
+      Handsontable.dom.addEvent(_this.$refs.btn111, "click", function(event) {
+        console.log("loadDataing...");
         _this.hot.loadData(_this.dataVal);
-        console.log('loadDataed...');
-      })
+        console.log("loadDataed...");
+      });
     },
     // 求和操作
     _calAdd() {
       let _this = this;
       if (_this.flagOfsel) {
-        _this.hot.selectCell(_this.startRow, _this.startCol, _this.endRow, _this.endCol);
+        _this.hot.selectCell(
+          _this.startRow,
+          _this.startCol,
+          _this.endRow,
+          _this.endCol
+        );
         let arr = _this.seleArr,
           result = 0;
         for (let i = 0, len = arr.length; i < len; i++) {
           if (arr[i] === null) {
             arr[i] = 0;
           } else {
-            arr[i] = arr[i].replace(/[^0-9]/ig, "");
+            arr[i] = arr[i].replace(/[^0-9]/gi, "");
           }
           result += parseInt(arr[i]);
         }
@@ -640,14 +672,13 @@ export default {
 
     // 求最大值
     // 求最小值
-    // 求平均值  
+    // 求平均值
   }
-}
+};
 </script>
 <style scoped>
 #main {
   height: calc(100vh - 60px);
-  /* margin: 60px auto; */
   position: relative;
 }
 
@@ -668,8 +699,8 @@ export default {
   line-height: 47px;
   font-size: 14px;
   color: #000000;
-  background-color: #FAFDFF;
-  border-bottom: 2px solid #C8C9CC;
+  background-color: #fafdff;
+  border-bottom: 2px solid #c8c9cc;
 }
 
 .left-com-top span,
@@ -683,20 +714,20 @@ export default {
 
 .left-com-top i {
   float: right;
-  color: #4BB8FF;
+  color: #4bb8ff;
   cursor: pointer;
 }
 
 .left-com-bottom {
   height: calc(100% - 47px);
-  background-color: #FAFDFF;
+  background-color: #fafdff;
   font-size: 12px;
 }
 
 .left-com-bottom .top {
   height: 260px;
   width: 100%;
-  background: #FFFFFF;
+  background: #ffffff;
   border-bottom: 1px solid #ccc;
 }
 
@@ -707,7 +738,7 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  background: rgba(0, 0, 0, .1);
+  background: rgba(0, 0, 0, 0.1);
   padding-left: 15px;
 }
 
@@ -751,7 +782,7 @@ export default {
   width: 100%;
   height: 88px;
   border-left: 1px solid #ccc;
-  border-bottom: 1px solid #DDD;
+  border-bottom: 1px solid #ddd;
   box-sizing: border-box;
 }
 
@@ -760,8 +791,8 @@ export default {
   padding: 2px 0;
   line-height: 47px;
   box-sizing: border-box;
-  background-color: #F9F9F9;
-  border-bottom: 2px solid #C8C9CC;
+  background-color: #f9f9f9;
+  border-bottom: 2px solid #c8c9cc;
 }
 
 .right-tab {
@@ -769,7 +800,7 @@ export default {
   height: 41px;
   display: inline-block;
   box-sizing: border-box;
-  border-right: 1px solid #E1E1E1;
+  border-right: 1px solid #e1e1e1;
 }
 
 .right-tab .data-button {
@@ -777,11 +808,11 @@ export default {
   cursor: pointer;
   font-size: 14px;
   padding-left: 22px;
-  color: #4F4F4F;
+  color: #4f4f4f;
 }
 
 .right-tab .data-button:hover {
-  color: #20ACF1;
+  color: #20acf1;
 }
 
 .right-tab .btn3 {
@@ -806,22 +837,21 @@ export default {
   height: 41px;
   line-height: 40px;
   padding: 2px 0px;
-  color: #7B7676;
-  background-color: #FFFFFF;
+  color: #7b7676;
+  background-color: #ffffff;
 }
-
 .right-com-top-ctl .icon-btn {
   display: inline-block;
   height: 26px;
   width: 32px;
   text-align: center;
-  padding-top: 4px;
   color: #455564;
-  line-height: 1;
+  line-height: 26px;
   border: 1px solid rgb(255, 255, 255);
-  ;
 }
-
+.right-com-top-ctl .icon-btn .iconfont{
+  font-size: 20px;
+}
 .right-com-top-ctl .icon-btn:hover {
   background: #f9f9f9;
   border-radius: 3px;
@@ -833,23 +863,23 @@ export default {
 }
 
 .right-com-top-ctl .icon-btn {
-  color: #7B7676;
+  color: #7b7676;
   cursor: pointer;
   margin-left: 20px;
 }
 
 .right-com-main {
   height: calc(100% - 128px);
-  border-top: 1px solid #DDD;
+  border-top: 1px solid #ddd;
   box-sizing: border-box;
 }
 
 .right-com-main .fx-control {
   position: relative;
-  border-bottom: 1px solid #D4D4D4;
+  border-bottom: 1px solid #d4d4d4;
   height: 26px;
   border-left: 1px solid #ccc;
-  background: #FAFAFA;
+  background: #fafafa;
   color: #737373;
 }
 
@@ -865,7 +895,7 @@ export default {
   height: 21px;
   left: 0;
   top: 2px;
-  border-right: 1px solid #C7C8C9;
+  border-right: 1px solid #c7c8c9;
   cursor: pointer;
   text-align: center;
   line-height: 21px;
@@ -876,7 +906,7 @@ export default {
 }
 
 .fx-control input {
-  width: 100%!important;
+  width: 100% !important;
   height: 26px;
   font-size: 12px;
   margin-bottom: 0;
@@ -893,7 +923,7 @@ export default {
   height: 40px;
   line-height: 40px;
   box-sizing: border-box;
-  background-color: #F9F9F9;
+  background-color: #f9f9f9;
   padding-left: 20px;
   border-left: 1px solid #ccc;
   box-sizing: border-box;
@@ -903,7 +933,9 @@ export default {
 .right-com-bottom span {
   padding-right: 10px;
 }
-
+.left-tab .iconfont{
+  font-size: 22px;
+}
 #example,
 .handsontable .htMenu {
   color: #333;
@@ -929,16 +961,16 @@ export default {
 }
 
 .control-board-filter .filter-inner {
-  box-shadow: 0 2px 4px #CCC;
+  box-shadow: 0 2px 4px #ccc;
   border-radius: 4px;
 }
 
 .filter-inner-drag {
   position: relative;
   min-height: 26px;
-  border: 1px solid #CACACA;
+  border: 1px solid #cacaca;
   border-radius: 4px 4px 0 0;
-  background: rgba(238, 238, 238, .8);
+  background: rgba(238, 238, 238, 0.8);
 }
 
 .filter-inner-drag span {
@@ -956,36 +988,36 @@ export default {
 }
 
 .filter-inner-content {
-  background: #F7F7F7;
-  border: 1px solid #CACACA;
+  background: #f7f7f7;
+  border: 1px solid #cacaca;
   border-radius: 0 0 5px 5px;
   border-top: none;
 }
 
 .item-bar {
-  border-top-color: #A2A2A2;
+  border-top-color: #a2a2a2;
   height: 27px;
   line-height: 26px;
-  border-bottom: 1px solid #D5D5D5;
+  border-bottom: 1px solid #d5d5d5;
   padding-left: 10px;
-  background: #FDFDFD;
+  background: #fdfdfd;
   color: #888;
 }
 
 .item-content {
   padding: 1px 0 5px 5px;
   height: 142px;
-  border-bottom: 1px solid #D5D5D5;
+  border-bottom: 1px solid #d5d5d5;
   overflow: auto;
 }
 
-.item-content>ul {
+.item-content > ul {
   margin: 0;
   padding: 0;
   max-height: 200px;
 }
 
-.item-content>ul>li {
+.item-content > ul > li {
   float: left;
   height: 20px;
   list-style-type: none;
@@ -1000,14 +1032,14 @@ export default {
 }
 
 li.member {
-  background: #E5F1FF;
-  border: 1px solid #69C;
-  color: #2A6085;
-  display: inline!important;
+  background: #e5f1ff;
+  border: 1px solid #69c;
+  color: #2a6085;
+  display: inline !important;
   margin-left: 10px;
 }
 
-li.member>.iconfont {
+li.member > .iconfont {
   font-size: 14px;
   cursor: pointer;
   margin-left: 5px;

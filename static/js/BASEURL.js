@@ -1,1 +1,0 @@
-const BASEURL  = "${pageContext.request.contextPath}";

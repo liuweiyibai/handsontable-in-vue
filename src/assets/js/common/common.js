@@ -15,3 +15,10 @@ export function contains(needle, array) {
         }
     }
 }
+
+// 截取某个字符串中某个字符的前或者后的字符,如果传入字符是1，就返回前面的字符，传入字符是其他就返回后面的
+export function getStr(string, str,) {
+    let index = string.lastIndexOf(str);//查找最后一个str出现的位置
+    let ss = string.slice(index,string.length);// 截取从当前位置到最后一个字符的所有字符返回
+    return ss;
+}

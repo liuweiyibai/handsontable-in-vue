@@ -8,7 +8,8 @@
     <div class="Maincontent detail-addFile">
       <div class="header">
         <div class="search-bar">
-          <el-input size="small" placeholder="输入关键词" icon="search" :on-icon-click="handleIconClick">
+          <el-input size="small" placeholder="输入关键词">
+          <i slot="suffix" class="el-input__icon el-icon-search"  @click="handleIconClick"></i>
           </el-input>
         </div>
         <div class="tabbar">
@@ -16,17 +17,17 @@
         </div>
       </div>
       <div class="main">
-        <el-table :data="tableData" style="width: 100%" border>
-          <el-table-column prop="date" label="名称" width="200">
+        <el-table :data="tableData" border max-height="400">
+          <el-table-column prop="date" label="名称">
           </el-table-column>
-          <el-table-column prop="name" label="所有者" width="200">
+          <el-table-column prop="name" label="所有者">
           </el-table-column>
-          <el-table-column prop="province" label="修改时间" width="200">
+          <el-table-column prop="province" label="修改时间">
           </el-table-column>
-          <el-table-column prop="city" label="数据源" width="150">
+          <el-table-column prop="city" label="数据源">
           </el-table-column>
           <el-table-column label="操作">
-            <template scope="scope">
+            <template slot-scope="scope">
               <el-button @click="handleClickToForm(scope.$index,scope.row.number)" type="text" size="small">表格分析</el-button>
               <el-button @click="handleClickToInstrumentBoard()" type="text" size="small">仪表盘分析</el-button>
             </template>
@@ -36,7 +37,7 @@
     </div>
     <!-- 上传文件弹层 -->
     <div id="dialogUpload">
-      <el-dialog title="新建数据源" :visible.sync="dialogVisible" size="big">
+      <el-dialog title="新建数据源" :visible.sync="dialogVisible" width="30%">
         <div class="dialog-top" title="本地数据文件">
           <div class="img-content">
             <router-link to="/uploadData/addFile">

@@ -7,27 +7,27 @@
     <div class="content">
       <el-table :data="tableData" border style="width: 100%;overflow:hidden;" max-height="400">
         <el-table-column label="ID" width="180">
-          <template scope="scope">
+          <template slot-scope="scope">
             <el-icon name="time"></el-icon>
             <span style="margin-left: 10px">{{ scope.row.date }}</span>
           </template>
         </el-table-column>
         <el-table-column label="算法名称" width="180">
-          <template scope="scope">
+          <template slot-scope="scope">
               <div slot="reference" class="name-wrapper">
                 <el-tag>{{ scope.row.name }}</el-tag>
               </div>
           </template>
         </el-table-column>
         <el-table-column label="算法描述" width="180">
-          <template scope="scope">
+          <template slot-scope="scope">
               <div slot="reference" class="name-wrapper">
                 <el-tag>{{ scope.row.name }}</el-tag>
               </div>
           </template>
         </el-table-column>
          <el-table-column label="状态" width="180">
-          <template scope="scope">
+          <template slot-scope="scope">
               <div slot="reference" class="name-wrapper">
                 <el-tag>{{ scope.row.name }}</el-tag>
               </div>
@@ -35,7 +35,7 @@
         </el-table-column>
 
         <el-table-column label="操作">
-          <template scope="scope">
+          <template slot-scope="scope">
             <el-button size="small" @click="handleEdit(scope.$index, scope.row)">创建训练任务</el-button>
             <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>

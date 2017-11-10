@@ -1,6 +1,6 @@
 const state = {
   userInfo: {
-    id:1
+    name: 0
   },
   token: ''
 }

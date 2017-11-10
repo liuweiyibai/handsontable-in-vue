@@ -6,3 +6,14 @@ export const setStorage = (key, value) => {
 export const getStorage = (key) => {
   return localStorage.getItem(key)
 }
+
+export const getCookie = (name) => { //匹配字段  
+  var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+  if (arr = document.cookie.match(reg))
+
+    return (arr[2]);
+
+  else
+
+    return null;
+}
