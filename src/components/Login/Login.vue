@@ -85,7 +85,7 @@ export default {
               let user = JSON.parse(m.data.user);
               localStorage.setItem("ID", user.userId);
               localStorage.setItem('islogin',true);
-              Vue.prototype.ID = localStorage.getItem('ID');
+              Vue.prototype.ID = parseInt(localStorage.getItem('ID'));
               localStorage.setItem("token", user.userName);
               self.$router.push("/Home");
             })

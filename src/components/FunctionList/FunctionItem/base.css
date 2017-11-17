@@ -86,11 +86,11 @@
     color: #1f2d3d;
     display: inline-block;
     font-size: 14px;
-    height: 36px;
+    height: 30px;
     line-height: 2;
     outline: none;
     padding: 3px 10px;
     transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
-    width: 100%;
+    width: 80%;
     cursor: pointer;
 }

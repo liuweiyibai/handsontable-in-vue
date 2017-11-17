@@ -32,13 +32,15 @@ export default {
   },
   methods: {
     DOWNLOAD(scope) {
-      let self = this;
-      let url = `${this.$Http.defaults.baseURL}/down/test?filename=${scope.row
-        .name}&id=${scope.row.id}&userId=${self.ID}`;
-      let a = document.createElement("a");
-      a.href = url;
-      a.download = "download";
-      a.click();
+      setTimeout(() => {
+        let self = this;
+        let url = `${this.$Http.defaults.baseURL}/down/test?filename=${scope.row
+          .name}&id=${scope.row.id}&userId=${self.ID}`;
+        let a = document.createElement("a");
+        a.href = url;
+        a.download = "download";
+        a.click();
+      }, 5000);
     },
     aidHttp(aid) {
       let params = new URLSearchParams();
@@ -99,7 +101,9 @@ export default {
     } else {
       aid = this.$route.query.aid;
     }
-    this.aidHttp(aid);
+    setTimeout(() => {
+      this.aidHttp(aid);
+    },1000);
   }
 };
 </script>

@@ -36,7 +36,9 @@
       </div>
       <div class="content-body">
         <!-- 创建算法任务 -->
-        <div class="div-common div-common-first" v-show="divShowOrHide[0].divshow">
+        <div class="div-common div-common-first" 
+          v-show="divShowOrHide[0].divshow" 
+          style="padding-top:30px;box-sizing:border-box;">
           <div class="bg-content"  v-for="(item,index) in arithmeticList" :key="item.index"
           :class="{'bg-img':clickBg === index}" @click.stop="addCreat(index,item.status)">
             <div class="bg-content-top">{{item.algoName}}</div>
@@ -51,8 +53,9 @@
           </div>
         </div>
         <!-- 创建训练任务 -->
-        <div class="div-common" v-show="divShowOrHide[1].divshow" style="padding-bottom:20px;">
-            <el-form ref="form" label-width="80px">
+        <div class="div-common" v-show="divShowOrHide[1].divshow" 
+          style="box-sizing:border-box;padding-bottom:20px;padding:20px 0 0 80px">
+            <el-form ref="form" label-width="80px" size="mini">
               <el-form-item label="算法任务">
                 <span class="el-span" 
                  @click="ArithmeticMessionListFunc()">{{suanfarenwuName}}
@@ -62,11 +65,11 @@
                 <span class="el-span" 
                 @click="SelectInputDataFunc()">{{TranningMessionObj.inputDataid}}</span>
               </el-form-item>
-              <el-form-item label="训练数据与测试数据比重" label-width="180px">
+              <el-form-item label="训练数据占比" label-width="105px">
                 <span class="span-top">
-                 <i class="iconfont" @click.stop="addPlus" ref="i1">&#xe625;</i>
-                 <input type="text" class="ipt--" v-model="baifeizhi"> 
-                 <i class="iconfont" @click.stop="subtract" ref="i2">&#xe631;</i> 
+                   <i class="iconfont" @click.stop="subtract" ref="i2">&#xe60a;</i> 
+                 <input type="text" class="ipt--" v-model="baifeizhi"><span>%  </span>
+                   <i class="iconfont" @click.stop="addPlus" ref="i1">&#xe606;</i>
                 </span>
               </el-form-item>
               <el-form-item label="算法参数">
@@ -77,7 +80,7 @@
               </el-form-item>
             </el-form>
             <!-- 训练任务步骤条 -->
-            <el-steps :active="step[0].active"
+            <el-steps :active="step[0].active" style="margin-left:-130px;"
               align-center
               process-status="finish" 
               finish-status="finish"
@@ -106,13 +109,15 @@
             </div>
         </div>
         <!-- 创建离线数据分析任务和算法发布 -->
-        <div class="div-common" v-show="divShowOrHide[2].divshow"style="height:100%;">
+        <div class="div-common" v-show="divShowOrHide[2].divshow"
+           style="box-sizing:border-box;height:100%;padding-bottom:20px;padding:20px 0 0 80px">
           <el-tabs style="height:100%;" @tab-click="tabClick">
             <el-tab-pane label="实时分析" style="height:100%;">
               <div class="one-table">
-                <el-form ref="form" label-width="80px">
+                <el-form ref="form" size="mini">
                   <el-form-item label="选择模型">
-                    <span class="el-span" @click="PublishAltoTranningFunc()">{{PublishAltoTranningObj.model}}</span>
+                    <span class="el-span" 
+                    @click="PublishAltoTranningFunc()">{{PublishAltoTranningObj.model}}</span>
                   </el-form-item>
                 </el-form>
                 <!-- 发布的进度条 -->
@@ -123,7 +128,6 @@
                  v-show="step[1].show">
                   <el-step title="已提交" ></el-step>
                   <el-step title="运行中" ></el-step>
-                  <el-step title="完成" ></el-step>
                 </el-steps>
                 <div class="div-foo" v-show="complatedshishifenxi">
                   <div class="el-notification__group">
@@ -144,15 +148,15 @@
             <!-- 离线数据分析 -->
             <el-tab-pane label="离线分析">
             <div class="two-table">
-            <el-form>
+            <el-form size="mini">
                <el-form-item label="选择模型">
-                <span style="width:80%;"
+                <span
                 class="el-span" 
                 @click="dialogObj.OffLineAnalyiseMessionThreeDialog = true,__offlineSelectModelHttp();">
                 {{AnalyiseDataObj.trainId}}</span>
               </el-form-item>
               <el-form-item label="输入数据">
-                <span class="el-span" style="width:80%;"
+                <span class="el-span"
                  @click="OffLineAnalyiseMessionOneFunc()">{{AnalyiseDataObj.input}}</span>
               </el-form-item>
               <!-- <el-form-item label="算法插件">
@@ -209,13 +213,13 @@
     </el-dialog>
 
     <!-- 算法训练中查询任务算法列表___对话框 -->
-    <el-dialog title="算法任务" :visible.sync="dialogObj.requireArithmeticMessionDialog" width="90%">
-      <el-table :data="TranningMessionArithmeticListObj" border style="overflow:hidden;">
+    <el-dialog title="算法任务" :visible.sync="dialogObj.requireArithmeticMessionDialog" width="80%">
+      <el-table :data="TranningMessionArithmeticListObj" border>
         <el-table-column label="ID" prop="algoTaskId"></el-table-column>
         <el-table-column label="算法名称" prop="algoname"></el-table-column>
         <el-table-column label="状态" prop="app_status" :formatter="__appStatus"></el-table-column>
-        <el-table-column label="开始时间" prop="starttime" :formatter="__timer"></el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="开始时间" prop="starttime"  :formatter="__timer"></el-table-column>
+        <el-table-column label="操作" width="180">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="SecondTranningMessionSelectFunction(scope)">添加</el-button>
           </template>
@@ -224,7 +228,8 @@
     </el-dialog>
 
     <!-- 算法训练任务中输入数据弹窗___对话框 -->
-    <el-dialog title="输入数据ID" :visible.sync="dialogObj.SelectInputDataDialog" style="padding: 6px 20px;">
+    <el-dialog title="输入数据ID" :visible.sync="dialogObj.SelectInputDataDialog"
+     style="padding: 6px 20px;">
       <el-table :data="TranningMessionFileListObj" style="width:100%">
         <el-table-column label="文件名称" prop="name" width="200"></el-table-column>
         <el-table-column label="文件大小" prop="fileSize" width="200" :formatter="__Filesize"></el-table-column>
@@ -550,12 +555,13 @@ export default {
         this.flagFilter += one[i].paramName + ":" + one[i].defaultValues + ";";
       }
     },
-    // 切换tab的时候，发布隐藏进度条和
+    // 切换tab的时候，发布隐藏进度条和清除定时器并且要是当前按钮可用
     clearPublish() {
       this.btnLoading.publish = false;
       if (this.timer.pubTimer) {
         clearInterval(this.timer.pubTimer);
       }
+      this.PublishAltoTranningObj.model = "";
       this.step[1].show = false;
     },
     // 清除离线
@@ -566,8 +572,8 @@ export default {
       }
       this.step[2].show = false;
       this.complatedlixianfenxi = false;
-      this.AnalyiseDataObj.trainId = '';
-      this.AnalyiseDataObj.input = '';
+      this.AnalyiseDataObj.trainId = "";
+      this.AnalyiseDataObj.input = "";
     },
     // 训练数据与测试数据比重 添加
     subtract() {
@@ -587,11 +593,22 @@ export default {
     },
     // 应用模型中tab栏的时候
     tabClick(t) {
+      // 切换到1的时候，按钮可以用，并且停掉定时器，隐藏进度条
       if (t.index == 0) {
-        this.clearPublish();
+        // this.clearPublish();
+        this.btnLoading.publish = false;
+        if (this.timer.pubTimer) {
+          clearInterval(this.timer.pubTimer);
+        }
+        this.step[1].show = false;
       }
+      // 切换到2的时候，按钮可以用
       if (t.index == 1) {
-        this.clearoutLine();
+        this.btnLoading.analyise = false;
+        if (this.timer.AnaTimer) {
+          clearInterval(this.timer.AnaTimer);
+        }
+        this.step[2].show = false;
         this.complatedlixianfenxi = false;
       }
     },
@@ -688,8 +705,8 @@ export default {
       //   });
       // }
     },
-    // 拿到训练完成的数据，跳转到模型应用页
-    __changeThreeteb(index){
+    // 拿到训练完成的数据，跳转到模型应用页，下一步操作
+    __changeThreeteb(index) {
       for (let i = 0, len = this.divShowOrHide.length; i < len; i++) {
         this.divShowOrHide[i].divshow = false;
         this.divShowOrHide[i].classA = false;
@@ -697,7 +714,9 @@ export default {
       for (let i = 0, len = this.step.length; i < len; i++) {
         this.step[i].show = false;
       }
-       // this.PublishAltoTranningObj.model
+      this.btnLoading.publish = false;
+      this.divShowOrHide[index].divshow = true;
+      this.divShowOrHide[index].classA = true;
     },
     CHANGETAB(index, ifGo) {
       for (let i = 0, len = this.divShowOrHide.length; i < len; i++) {
@@ -734,15 +753,14 @@ export default {
           console.log(err);
         });
     },
-    addCreat(index,e) {
-      this.arithmeticName = '';
-      if(e != 4){
+    addCreat(index, e) {
+      this.arithmeticName = "";
+      if (e != 4) {
         this.arithmeticName = this.arithmeticList[index].algoName;
         this.clickBg = index;
-      }else{
+      } else {
         return;
       }
-     
     },
     // 创建算法任务按钮事件
     CreateMissionHttp() {
@@ -874,6 +892,8 @@ export default {
       this.TranningMessionObj.algoJobId = scope.row.algoTaskId;
       this.TranningMessionParamsConfigObj.algoid = scope.row.algoId;
       this.TranningMessionObj.algoname = scope.row.algoname;
+      // 清空算法参数
+      this.flagFilter = "";
       let d = new Date(scope.row.starttime);
       let tt =
         d.getFullYear() +
@@ -1034,10 +1054,11 @@ export default {
         .then(m => {
           if (m[0].status === 0) {
             self.notify("算法发布成功", "您可以稍后查看发布结果！");
+            // 请求成功使按钮不可用
+            this.btnLoading.publish = true;
             localStorage.setItem("pubid", m[0].deploy);
             self.publishLoading(m[0].deploy);
             self.timer.pubTimer = setInterval(() => {
-              self.btnLoading.publish = true;
               self.publishLoading(m[0].deploy);
             }, 5000);
           }
@@ -1051,7 +1072,6 @@ export default {
       let sid = "",
         self = this,
         params = new URLSearchParams();
-      this.btnLoading.publish = true;
       sid = id ? id : localStorage.getItem("pubid");
       for (let i = 0, l = self.step.length; i < l; i++) {
         self.step[i].show = false;
@@ -1068,14 +1088,14 @@ export default {
           data: params
         })
         .then(m => {
+          // 实时分析进度条，0是错误、1是运行中、2是完成
           if (m.data[0].status === 0 || m.data[0].status === 1) {
             self.step[1].active = 0;
           } else if (m.data[0].status === 3) {
             self.step[1].active = 1;
           } else if (m.data[0].status === 4 || m.data[0].status === 9) {
             clearInterval(self.timer.pubTimer);
-            self.btnLoading.publish = false;
-            self.step[1].active = 2;
+            self.step[1].active = 1;
           } else {
             self.step[1].active = 0;
             self.$message("运行出错，请重新开始任务！");
@@ -1228,11 +1248,14 @@ export default {
     // 离线分析任务完成后进行跳转
     inquireoffline() {
       let aid = this.offlineDataid;
-      localStorage.setItem('offlineDataid',aid);
-      this.$router.push({
+      localStorage.setItem("offlineDataid", aid);
+      setTimeout(()=>{
+        this.$router.push({
         path: "/Item2/TraningMission",
         query: { aid: aid }
       });
+      })
+      
     },
     // 文件上传
     fileUpload(file) {
@@ -1260,8 +1283,14 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 @import url("base.css");
+#item2 .el-table__body-wrapper {
+  overflow: hidden !important;
+}
+#item2 .el-tabs__nav-wrap::after{
+  width: 88%;
+}
 #item2-ul {
   height: 32px;
   overflow: hidden;
@@ -1350,7 +1379,7 @@ export default {
   box-sizing: border-box;
   padding: 0 20px;
   width: 45%;
-  height: 100px;
+  height: 80px;
   background-color: #fafafb;
   border: 1px solid #ccc;
   border-radius: 5px;

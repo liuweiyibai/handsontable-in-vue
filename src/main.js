@@ -20,7 +20,7 @@ Vue.prototype.echarts = echarts;
 Vue.prototype.Ps = Ps;
 Vue.prototype.$Http = instance;
 Vue.prototype.QS = QS;
-Vue.prototype.ID = localStorage.getItem('ID');
+Vue.prototype.ID = parseInt(localStorage.getItem('ID'));
 Vue.component('ScrollBar', ScrollBar);
 
 new Vue({

@@ -5,20 +5,21 @@
         <span class="name">数据表</span>
           <router-link to="/uploadData">
             <el-tooltip class="item" effect="dark" content="返回上一级" placement="bottom">
-                <i class="iconfont">&#xe614;</i>
+                <i class="iconfont">&#xe60c;</i>
             </el-tooltip>
           </router-link>
       </div>
       <div class="left-com-bottom">
-        <div class="top" style="overflow:hidden;position:relative;">
-          <div class="title">维度</div>
+        <div class="top" style="overflow:hidden;">
+          <div class="title title1">维度</div>
           <ul class="RowMeasure" style="height:800px;">
-            <li class="itemlist itemlist1" :draggable="item.age" title="拖拽添加" :data-index="index" v-for="(item,index) in colsList" :key="index">
+            <li class="itemlist itemlist1" :draggable="item.age" title="拖拽添加" 
+            :data-index="index" v-for="(item,index) in colsList" :key="index">
               <i class="iconfont">&#xe607;</i>{{item.name}}</li>
           </ul>
         </div>
-        <div class="bottom" style="overflow:hidden;position:relative;">
-          <div class="title">度量</div>
+        <div class="bottom" style="overflow:hidden;">
+          <div class="title title2">度量</div>
           <ul class="ColMeasure" style="height:800px;">
             <li class="itemlist itemlist2" :draggable="item.age" title="拖拽添加" :data-index="index" v-for="(item,index) in rolsList" :key="index">
               <i class="iconfont">&#xe607;</i>{{item.name}}</li>
@@ -32,7 +33,7 @@
           <div class="right-tab">
             <div data-type="button" class="data-button btn1">表格</div>
             <div data-type="button" class="data-button btn2">
-              <router-link to="/InstrumentBoard">图表</router-link>
+              <!-- <router-link to="/InstrumentBoard">图表</router-link> -->
             </div>
             <div data-type="button" class="data-button btn3" @click.stop.prevent="_analyiseRestart">重置数据</div>
           </div>
@@ -97,18 +98,18 @@
           <!-- 开始 -->
           <!-- <span class="iconfont icon">&#xe601;</span> -->
           <el-tooltip class="item" effect="dark" content="最大值" placement="bottom">
-            <span class="icon-btn">
+            <span class="icon-btn" @click="__MAX()">
               <i class="iconfont">&#xe67c;</i>
             </span>
           </el-tooltip>
 
           <el-tooltip class="item" effect="dark" content="最小值" placement="bottom">
-            <span class="icon-btn">
+            <span class="icon-btn" @click="__MIN()">
               <i class="iconfont">&#xe67b;</i>
             </span>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="平均值" placement="bottom">
-            <span class="icon-btn">
+            <span class="icon-btn" @click="__AVERAGE()">
               <i class="iconfont">&#xe667;</i>
             </span>
           </el-tooltip>
@@ -124,7 +125,7 @@
           <div class="fx-left" @click="dialogFormVisible = true">
             <i class="iconfont">&#xe74c;</i>
           </div>
-          <input type="text" size="200" style="width:400px" ref="search_ipt">
+          <input type="text" size="200" style="width:400px" ref="search_ipt" v-model="GLOBALbase">
         </div>
         <div class="main-table" id="example"></div>
       </div>
@@ -139,7 +140,7 @@
 
     <!-- 函数列表 -->
     <el-dialog title="函数列表" :visible.sync="dialogFormVisible">
-      <el-form :model="form">
+      <el-form :model="form" size="mini">
         <el-form-item label="类别" :label-width="formLabelWidth">
           <el-select v-model="value8" filterable placeholder="请选择">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
@@ -154,8 +155,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button @click="dialogFormVisible = false" size="mini">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false" size="mini">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 控制面板 -->
@@ -171,7 +172,7 @@
           <div class="filter-inner-content" v-show="ControlBoardShow">
             <!-- 行 -->
             <div class="filter-inner-content-item">
-              <div class="item-bar">列&nbsp;
+              <div class="item-bar">维度&nbsp;
                 <el-tooltip class="item" effect="dark" content="拖拽行中名称添加筛选条件" placement="bottom">
                   <i class="iconfont" style="font-size:14px;cursor:pointer;">&#xe62f;</i>
                 </el-tooltip>
@@ -186,7 +187,7 @@
             </div>
             <!-- 列 -->
             <div class="filter-inner-content-item">
-              <div class="item-bar">行&nbsp;
+              <div class="item-bar">度量&nbsp;
                 <el-tooltip class="item" effect="dark" content="拖拽列中名称添加筛选条件" placement="bottom">
                   <i class="iconfont" style="font-size:14px;cursor:pointer;">&#xe62f;</i>
                 </el-tooltip>
@@ -201,7 +202,7 @@
             </div>
             <div class="bottom-control">
               <div class="bottom-control-item">
-                <el-button size="small">开始检索</el-button>
+                <el-button size="mini" @click="begin()" type="primary">数据可视化</el-button>
               </div>
             </div>
           </div>
@@ -213,56 +214,32 @@
 <script>
 document.onselectstart = function() {
   return false;
-};// 如果重新加载的话提示用户先保存
+}; // 如果重新加载的话提示用户先保存
 // window.onbeforeunload = function() {
 //   return 'null';
-// }; 
+// };
 import "../../../static/css/handsontable.full.min.css";
 export default {
   data() {
     return {
+      GLOBALbase: "",
+      options: [],
+      value8: "1",
       seleArr: [], // 用户选中的部分进行保存
-      colsList: [
-        {
-          name: "北京",
-          age: true
-        },
-        {
-          name: "天津",
-          age: true
-        },
-        {
-          name: "上海",
-          age: true
-        }
-      ],
-      rolsList: [
-        {
-          name: "广州",
-          age: true
-        },
-        {
-          name: "深圳",
-          age: true
-        },
-        {
-          name: "香港",
-          age: true
-        }
-      ],
+      colsList: [],
+      rolsList: [],
       newColList: [], // 保存用户投放区域数据 1
       newRolList: [], // 保存用户投放区域数据 2
       dragFlag: -1, // 用来判断是不是指定的投放区域
       ControlBoardShow: true, // 是否显示控制面板，默认显示
       currentIndex: 1, // 保存当前页数
-      dataVal: [], // 保存后台返回的表格数据
+      dataVal: [], // 接收存放后台返回的表格数据
       hot: Object, // 保存表格对象
       flagOfsel: false, // 用来判断是否是备选中的状态，如果是true，就是被选中的状态，所以就在当前行或列添加，如果是false，就默认在第一行添加行或列
       startRow: 0, // 开始行
       startCol: 0, //开始列
       endRow: 0, //结束行
       endCol: 0, //结束列
-
       dialogFormVisible: false,
       form: {
         name: "",
@@ -274,6 +251,7 @@ export default {
         resource: "",
         desc: ""
       },
+      headers: [],
       formLabelWidth: "120px"
     };
   },
@@ -282,14 +260,7 @@ export default {
       this.$router.push("/");
       return;
     }
-    let _this = this,
-      lis1 = document.querySelectorAll("li.itemlist1"),
-      dustbin1 = document.querySelector("div.dustbin1");
-    _this.DRAGTHINGCol(lis1, dustbin1, _this.colsList, _this.newColList, 1);
-
-    let lis2 = document.querySelectorAll("li.itemlist2"),
-      dustbin2 = document.querySelector(".dustbin2");
-    _this.DRAGTHINGCol(lis2, dustbin2, _this.rolsList, _this.newRolList, 2);
+    let _this = this;
 
     const containerTop = document.querySelector(".left-com-bottom .top");
     _this.PsInit(containerTop);
@@ -298,7 +269,7 @@ export default {
     _this.PsInit(containerBottom);
 
     // 初始化表格
-    _this.InitHot(document.querySelector("#example"), this.hotSeeting);
+    _this.InitHot(document.querySelector("#example"));
     _this.hot.addHook("afterSelectionEnd", function(
       startRow,
       startCol,
@@ -311,7 +282,6 @@ export default {
       _this.startCol = startCol;
       _this.endRow = endRow;
       _this.endCol = endCol;
-
       // let big = _this.hot.getValue(startRow, startCol, endRow, endCol);// 获取到一个格子的值
       let data = _this.hot.getData(startRow, startCol, endRow, endCol);
       let arr = [];
@@ -320,11 +290,17 @@ export default {
           arr.push(data[i][j]);
         }
       }
+      localStorage.setItem("start", startCol);
+      localStorage.setItem("end", endCol);
       _this.seleArr = arr;
+      let as = JSON.stringify(arr);
+      localStorage.setItem("as", as);
     });
 
     // 搜索事件
     _this._GlobalSearch();
+    // 载入表格数据
+    _this._loadData();
   },
   methods: {
     DRAGTHINGCol(list, dustbin, arr, newArr, flag) {
@@ -352,7 +328,6 @@ export default {
       dustbin.ondragenter = function(ev) {
         let muflag = ev.target.getAttribute("data");
         if (muflag == _this.dragFlag) {
-          console.log(_this.dragFlag, muflag + "1级");
           dustbin.ondrop = function(ev) {
             newArr.push(arr[index]);
             arr[index].age = false;
@@ -364,6 +339,45 @@ export default {
         return true;
       };
     },
+    // 返回某个元素在数组中的位置
+    __findIndex(a, x) {
+      let len = a.length,
+        pos = 0;
+      while (pos < len) {
+        pos = a.indexOf(x, pos);
+        if (pos === -1) {
+          //未找到就退出循环完成搜索
+          break;
+        }
+        return pos;
+        pos += 1; //并从下个位置开始搜索
+      }
+    },
+    begin() {
+      let newColList = this.newColList;
+      let newRolList = this.newRolList;
+      let arr1 = [],
+        arr2 = [];
+      for (let i = 0, len = newColList.length; i < len; i++) {
+        arr1.push(this.__findIndex(this.dataVal, newColList[i].name));
+      }
+      for (let i = 0, len = newRolList.length; i < len; i++) {
+        arr2.push(this.__findIndex(this.dataVal, newRolList[i].name));
+      }
+      let ARR = [];
+      localStorage.setItem("headerArr", JSON.stringify(arr2));
+      localStorage.setItem(
+        "a1",
+        JSON.stringify(this.hot.getDataAtCol(arr1[0]))
+      );
+      for (let i = 0, len = arr2.length; i < len; i++) {
+        ARR.push([this.hot.getDataAtCol(arr2[i])]);
+      }
+      localStorage.setItem("a2", JSON.stringify(ARR));
+      setTimeout(() => {
+        this.$router.push({ path: "/InstrumentBoard" });
+      }, 300);
+    },
     // 初始化滚动条
     PsInit(dom) {
       let _this = this;
@@ -374,6 +388,7 @@ export default {
         suppressScrollX: true
       });
     },
+
     // 投放区待选条删除1
     deleteIndexCol(item) {
       let _this = this;
@@ -393,6 +408,7 @@ export default {
       }
       _this.colsList[index].age = true;
     },
+
     // 投放区待选条删除2
     deleteIndexRow(item) {
       let _this = this;
@@ -412,9 +428,11 @@ export default {
       }
       _this.rolsList[index].age = true;
     },
+    // 控制面板的显示和隐藏
     ControlBoardShowThing() {
       this.ControlBoardShow = !this.ControlBoardShow;
     },
+    // 控制面板的拖拽事件
     dragThing(e) {
       let box = this.$refs.controlBoard;
       let diffX = e.clientX - box.offsetLeft;
@@ -440,6 +458,7 @@ export default {
         document.onmousemove = null;
       };
     },
+
     // 打开提示，常用于主动操作后的反馈提示。与 Notification 的区别是后者更多用于系统级通知的被动提醒。
     openNotice(type, text) {
       if (type === "alert") {
@@ -529,6 +548,7 @@ export default {
           _this.endCol
         );
         _this.hot.getPlugin("copyPaste").cut();
+        _this.flagOfsel = false;
       }
     },
 
@@ -536,7 +556,17 @@ export default {
     _openDialog() {
       let _this = this;
     },
-
+    // 创建对象
+    __CreatObj(arr) {
+      let newArr = [];
+      for (let i = 0, len = arr.length; i < len; i++) {
+        newArr.push({
+          name: arr[i],
+          age: true
+        });
+      }
+      return newArr;
+    },
     // 数据还原到最开始的状态
     _analyiseRestart() {
       let _this = this;
@@ -559,6 +589,7 @@ export default {
 
     // 使用公式开始计算
     _startRequire() {},
+    // 初始化表格
     InitHot(dom, seeting) {
       let _this = this,
         defSettging = {
@@ -571,7 +602,7 @@ export default {
           minRows: 20,
           manualColumnFreeze: true,
           autoColumnSize: true,
-          fixedRowsBottom: 2,
+          // fixedRowsBottom: 2,
           search: true, // 启用搜索
           autoWrapRow: true, //自动换行
           copyPaste: true,
@@ -622,11 +653,59 @@ export default {
     // 保存数据
     _saveData() {
       let saveDatas = this.hot.getData();
-      console.log(this.hot.mergeCells.mergedCellInfoCollection);
+      // console.log(this.hot.mergeCells.mergedCellInfoCollection);
       // 加载 loading
       // 拿到数据后并且保存到后端
     },
-
+    __MAX() {
+      let _this = this;
+      _this.GLOBALbase = "";
+      if (_this.flagOfsel) {
+        _this.hot.selectCell(
+          _this.startRow,
+          _this.startCol,
+          _this.endRow,
+          _this.endCol
+        );
+        let ary = _this.seleArr;
+        let maxN = eval("Math.max(" + ary.join() + ")");
+        this.GLOBALbase = `MAX=${maxN}`;
+        // _this.flagOfsel = false;
+      }
+    },
+    __MIN() {
+      let _this = this;
+      _this.GLOBALbase = "";
+      if (_this.flagOfsel) {
+        _this.hot.selectCell(
+          _this.startRow,
+          _this.startCol,
+          _this.endRow,
+          _this.endCol
+        );
+        let ary = _this.seleArr;
+        let minN = eval("Math.min(" + ary.join() + ")");
+        this.GLOBALbase = `MIN=${minN}`;
+        // _this.flagOfsel = false;
+      }
+    },
+    __AVERAGE() {
+      let _this = this;
+      _this.GLOBALbase = "";
+      if (_this.flagOfsel) {
+        _this.hot.selectCell(
+          _this.startRow,
+          _this.startCol,
+          _this.endRow,
+          _this.endCol
+        );
+        let arr = _this.seleArr;
+        let sum = eval(arr.join("+"));
+        let average = ~~(sum / arr.length * 100) / 100;
+        this.GLOBALbase = `AVG=${average}`;
+        // _this.flagOfsel = false;
+      }
+    },
     // 全局搜索高亮
     _GlobalSearch() {
       let _this = this,
@@ -640,15 +719,56 @@ export default {
     // 载入数据
     _loadData() {
       let _this = this;
-      Handsontable.dom.addEvent(_this.$refs.btn111, "click", function(event) {
-        console.log("loadDataing...");
-        _this.hot.loadData(_this.dataVal);
-        console.log("loadDataed...");
-      });
+      _this
+        .$Http({
+          url: "algoDispatch/wind"
+        })
+        .then(m => {
+          // _this.hot.loadData(_this.dataVal);
+          _this.dataVal = m.attribute;
+          _this.hot.loadData(m.data);
+          // 更新设置，写入表头
+          _this.hot.updateSettings({
+            colHeaders: m.attribute
+          });
+          // colsList,rolsList
+          // 将$nextTick()放在服务端返回数据后进行使用。
+          _this.rolsList = _this.__CreatObj(m.measure);
+          _this.colsList = _this.__CreatObj(m.dimension);
+          // 在内存中存储表头数据。
+          localStorage.setItem("tableHeaders", JSON.stringify(m.attribute));
+          _this.$nextTick(() => {
+            let lis1 = document.querySelectorAll("li.itemlist1"),
+              dustbin1 = document.querySelector("div.dustbin1");
+            _this.DRAGTHINGCol(
+              lis1,
+              dustbin1,
+              _this.colsList,
+              _this.newColList,
+              1
+            );
+            let lis2 = document.querySelectorAll("li.itemlist2"),
+              dustbin2 = document.querySelector(".dustbin2");
+            _this.DRAGTHINGCol(
+              lis2,
+              dustbin2,
+              _this.rolsList,
+              _this.newRolList,
+              2
+            );
+          });
+        });
+
+      // Handsontable.dom.addEvent(_this.$refs.btn111, "click", function(event) {
+      //   console.log("loadDataing...");
+      //   _this.hot.loadData(_this.dataVal);
+      //   console.log("loadDataed...");
+      // });
     },
     // 求和操作
     _calAdd() {
       let _this = this;
+      _this.GLOBALbase = "";
       if (_this.flagOfsel) {
         _this.hot.selectCell(
           _this.startRow,
@@ -658,15 +778,17 @@ export default {
         );
         let arr = _this.seleArr,
           result = 0;
+        // let a = _this.hot.colToProp(1);
         for (let i = 0, len = arr.length; i < len; i++) {
-          if (arr[i] === null) {
-            arr[i] = 0;
-          } else {
-            arr[i] = arr[i].replace(/[^0-9]/gi, "");
-          }
+          // if (arr[i] === null) {
+          //   arr[i] = 0;
+          // } else {
+          //   arr[i] = arr[i].replace(/[^0-9]/g, "");
+          // }
           result += parseInt(arr[i]);
         }
-        console.log(result);
+        this.GLOBALbase = `SUM=${result}`;
+        // _this.flagOfsel = false;
       }
     }
 
@@ -688,7 +810,7 @@ export default {
   left: 0;
   bottom: 0;
   height: 100%;
-  width: 20%;
+  width: 220px;
 }
 
 .left-com-top {
@@ -714,7 +836,8 @@ export default {
 
 .left-com-top i {
   float: right;
-  color: #4bb8ff;
+  /* color: #4bb8ff; */
+  font-size: 18px;
   cursor: pointer;
 }
 
@@ -722,26 +845,34 @@ export default {
   height: calc(100% - 47px);
   background-color: #fafdff;
   font-size: 12px;
+  position: relative;
 }
 
 .left-com-bottom .top {
-  height: 260px;
+  height: 180px;
   width: 100%;
   background: #ffffff;
   border-bottom: 1px solid #ccc;
 }
 
 .left-com-bottom .title {
+  box-sizing: border-box;
   height: 30px;
   width: 100%;
   line-height: 30px;
   position: absolute;
-  top: 0;
-  left: 0;
-  background: rgba(0, 0, 0, 0.1);
+  background: #C0C0BA;
+  color: #fff;
   padding-left: 15px;
 }
-
+.left-com-bottom .title1{
+  top: 0;
+  left: 0;
+}
+.left-com-bottom .title2{
+ top: 182px;
+  left: 0;
+}
 .left-com-bottom .bottom {
   height: calc(100% - 260px);
   width: 100%;
@@ -775,7 +906,7 @@ export default {
   top: 60px;
   right: 0;
   bottom: 0;
-  width: 80%;
+  width: calc(100% - 220px);
 }
 
 .right-com-top {
@@ -849,7 +980,7 @@ export default {
   line-height: 26px;
   border: 1px solid rgb(255, 255, 255);
 }
-.right-com-top-ctl .icon-btn .iconfont{
+.right-com-top-ctl .icon-btn .iconfont {
   font-size: 20px;
 }
 .right-com-top-ctl .icon-btn:hover {
@@ -933,7 +1064,7 @@ export default {
 .right-com-bottom span {
   padding-right: 10px;
 }
-.left-tab .iconfont{
+.left-tab .iconfont {
   font-size: 22px;
 }
 #example,
@@ -951,8 +1082,8 @@ export default {
 
 .control-board-filter {
   position: absolute;
-  right: 1px;
-  top: 1px;
+  right: 20px;
+  top: 55px;
   width: 300px;
   min-width: 300px;
   z-index: 600;
@@ -968,9 +1099,12 @@ export default {
 .filter-inner-drag {
   position: relative;
   min-height: 26px;
-  border: 1px solid #cacaca;
+  /* border: 1px solid #cacaca; */
   border-radius: 4px 4px 0 0;
-  background: rgba(238, 238, 238, 0.8);
+  /* background: rgba(238, 238, 238, 0.8); */
+  background-color:#2d2b32;
+  opacity: .85;
+  color: #fff;
 }
 
 .filter-inner-drag span {
@@ -978,6 +1112,7 @@ export default {
 }
 
 .filter-inner-drag span.text {
+  font-size: 14px;
   left: 5px;
   top: 7px;
 }

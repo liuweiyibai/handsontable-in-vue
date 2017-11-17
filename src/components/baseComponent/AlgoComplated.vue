@@ -41,7 +41,7 @@
         </el-table-column>
       </el-table>
     </el-tab-pane>
-    <el-tab-pane label="查询发布任务" name="fourth">
+    <el-tab-pane label="查询发布任务" name="fourth"> 
        <el-table :data="table.case" border fixed>
         <el-table-column property="deplayId" label="发布ID" type="expand">
           <template slot-scope="props">

@@ -29,7 +29,7 @@
           <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button @click="handleClickToForm(scope.$index,scope.row.number)" type="text" size="small">表格分析</el-button>
-              <el-button @click="handleClickToInstrumentBoard()" type="text" size="small">仪表盘分析</el-button>
+              <!-- <el-button @click="handleClickToInstrumentBoard()" type="text" size="small">仪表盘分析</el-button> -->
             </template>
           </el-table-column>
         </el-table>
@@ -76,25 +76,10 @@ export default {
   data() {
     return {
       tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄',
-        number: 100000
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄',
-        number: 100000
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄',
-        number: 100000
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄',
-        number: 100000
+        date: '2017-11-13',
+        name: '风机训练数据',
+        province: '2017-11-13',
+        city: 100000
       }],
       dialogVisible: false
     }
@@ -111,7 +96,9 @@ export default {
     },
     // 切换到仪表盘
     handleClickToInstrumentBoard() {
-
+      this.$router.push({
+        path:"/InstrumentBoard"
+      })
     }
   }
 }
@@ -135,7 +122,11 @@ export default {
   padding-top: 8px;
   background-color: transparent;
 }
-
+.container-app .top .content h2{
+   color: #3FB2FD;
+    display: inline;
+}
+   
 .container-app .Maincontent {
   padding: 12px 22px;
   box-sizing: border-box;

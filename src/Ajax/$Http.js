@@ -5,7 +5,8 @@ import {
 } from 'element-ui';
 
 const instance = axios.create({
-  baseURL: "http://10.1.4.180:4080/DataAnalyzePlatformBA",
+  // http://10.1.4.180:4080/DataAnalyzePlatformBA;
+  baseURL: "http://10.1.4.170:5080/DataAnalyzePlatformBA",
   // timeout: 50000,
   // 数据响应前处理函数
   transformResponse: [function (data) {

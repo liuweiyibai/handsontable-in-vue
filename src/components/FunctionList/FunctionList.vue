@@ -9,7 +9,8 @@
                 <template v-if="item.subs">
                     <el-submenu :index="item.index" :key="item.index">
                         <template slot="title"><i :class="item.icon"></i>{{ item.title }}</template>
-                        <el-menu-item v-for="(subItem,i) in item.subs" :key="i" :index="subItem.index" style="padding-left: 15px;">
+                        <el-menu-item v-for="(subItem,i) in item.subs"
+                        :key="i" :index="subItem.index" style="padding-left: 15px;">
                           <i class="el-icon-my" style="font-size:16px;">&#xe604;</i>
                           {{ subItem.title }}
                         </el-menu-item>
@@ -34,11 +35,10 @@
 export default {
   data() {
     return {
-      show: 2,
       items: [
         {
           icon: "el-icon-setting",
-          // index: "/uploadData",
+          index: "/uploadData",
           title: "统计任务"
         },
         {
@@ -70,7 +70,7 @@ export default {
         },
         {
           icon: "el-icon-date",
-          // index: "/Item3",
+          index: "/Item3",
           title: "数据预处理"
         },
         {
@@ -88,10 +88,11 @@ export default {
             }
           ]
         },
-        {
-          icon: "el-icon-search",
-          title: "历史任务查询"
-        }
+        // {
+        //   icon: "el-icon-search",
+        //   index:"11",
+        //   title: "历史任务查询"
+        // }
       ]
     };
   },
@@ -144,7 +145,6 @@ export default {
   border-right: 0 none;
   box-sizing: border-box;
 }
-
 
 .list-left .el-submenu .el-menu .el-menu-item {
   background-color: #000 !important;
