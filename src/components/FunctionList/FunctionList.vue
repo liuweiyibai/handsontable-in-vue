@@ -32,46 +32,59 @@
   </div>
 </template>
 <script>
+import { randomString } from "./../../assets/js/common/common";
 export default {
   data() {
     return {
       items: [
         {
           icon: "el-icon-setting",
-          index: "/uploadData",
+          index: "/uploadData?PID=" + randomString(32),
           title: "统计任务"
         },
         {
           icon: "el-icon-menu",
-          index: "Home",
+          index: "Home?PID=" + randomString(32),
           title: "算法任务",
           subs: [
             {
-              index: "/Home?id=0",
+              index: "/Home?id=0&PID=" + randomString(32),
               title: "创建算法任务"
             },
             {
-              index: "/Home?id=1",
+              index: "/Home?id=1&PID=" + randomString(32),
               title: "训练任务"
             },
             {
-              index: "/Home?id=2",
+              index: "/Home?id=2&PID=" + randomString(32),
               title: "应用模型"
             },
             {
-              index: "/AlgoComplated",
+              index: "/AlgoComplated?PID=" + randomString(32),
               title: "已完成"
             },
             {
-              index: "/AlgoUndone",
+              index: "/AlgoUndone?PID=" + randomString(32),
               title: "未完成"
             }
           ]
         },
         {
           icon: "el-icon-date",
-          index: "/Item3",
-          title: "数据预处理"
+          title: "数据预处理",
+          index: "/Item3?PID=" + randomString(32),
+          subs: [
+            {
+              icon: "el-icon-star-on",
+              index: "/Item3?id=2&PID=" + randomString(32),
+              title: "创建数据预处理"
+            },
+            {
+              icon: "el-icon-star-on",
+              index: "/Item3?id=3&PID=" + randomString(32),
+              title: "执行数据预处理"
+            }
+          ]
         },
         {
           icon: "el-icon-star-on",
@@ -79,20 +92,20 @@ export default {
           title: "数据管理",
           subs: [
             {
-              index: "/Item4/Upload",
+              index: "/Item4/Upload?PID=" + randomString(32),
               title: "离线数据上传"
             },
             {
-              index: "/Item4/Inquire",
+              index: "/Item4/Inquire?PID=" + randomString(32),
               title: "离线数据查询"
             }
           ]
         },
-        // {
-        //   icon: "el-icon-search",
-        //   index:"11",
-        //   title: "历史任务查询"
-        // }
+        {
+          icon: "el-icon-search",
+          index: "11",
+          title: "历史任务查询"
+        }
       ]
     };
   },

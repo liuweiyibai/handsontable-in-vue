@@ -113,7 +113,7 @@ export default {
         three: false,
         four: false
       },
-      tableData:{lixianshuju:[]},
+      tableData: { lixianshuju: [] },
       table: {
         dataBaseCreat: [],
         dataBaseTranning: [],
@@ -133,8 +133,8 @@ export default {
   methods: {
     DOWNLOAD(scope) {
       let self = this;
-      let url = `${this.$Http.defaults.baseURL}/down/test?filename=${scope.row
-        .name}&id=${scope.row.id}&userId=${self.ID}`;
+      let url = `${self.URL.ip1}/down/test?filename=${scope.row.name}&id=${scope
+        .row.id}&userId=${self.ID}`;
       let a = document.createElement("a");
       a.href = url;
       a.download = "download";
@@ -238,7 +238,7 @@ export default {
       // tag 表示已完成状态下
       params.append("tag", "2");
       self.$Http
-        .post("algoDispatch/selectAlgoTaskmoney", params)
+        .post(self.URL.ip1 + "algoDispatch/selectAlgoTaskmoney", params)
         .then(m => {
           this.table.dataBaseCreat = m[0].data;
         })
@@ -253,7 +253,7 @@ export default {
       // tag 表示已完成状态下
       params.append("tag", "2");
       this.$Http
-        .post("algoDispatch/selectAlgoTrainkmoney", params)
+        .post(this.URL.ip1 + "algoDispatch/selectAlgoTrainkmoney", params)
         .then(m => {
           this.table.dataBaseTranning = m[0].data;
         })
@@ -268,7 +268,7 @@ export default {
       // tag 表示已完成状态下
       params.append("tag", "2");
       this.$Http
-        .post("algoDispatch/selectAlgoOfflinekmoney", params)
+        .post(this.URL.ip1 + "algoDispatch/selectAlgoOfflinekmoney", params)
         .then(m => {
           this.table.OutLine = m[0].data;
         })
@@ -282,9 +282,10 @@ export default {
       let self = this;
       let params = new URLSearchParams();
       params.append("evalId", evalid);
+      params.append('userId',self.ID);
       self
         .$Http({
-          url: "algoDispatch/evalData",
+          url: self.URL.ip1 + "algoDispatch/evalData",
           method: "post",
           data: params
         })
@@ -301,7 +302,7 @@ export default {
       params.append("userId", this.ID);
       params.append("id", aid);
       this.$Http({
-        url: "offline/dataInfoById",
+        url: this.URL.ip1 + "offline/dataInfoById",
         method: "post",
         data: params
       }).then(m => {
@@ -317,7 +318,7 @@ export default {
       params.append("tag", "2");
       params.append("userId", this.ID);
       this.$Http
-        .post("algoDispatch/selectAlgoDeploykmoney", params)
+        .post(this.URL.ip1 + "algoDispatch/selectAlgoDeploykmoney", params)
         .then(m => {
           this.table.case = m[0].data;
         })

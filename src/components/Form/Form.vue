@@ -3,7 +3,7 @@
     <div class="left-com">
       <div class="left-com-top">
         <span class="name">数据表</span>
-          <router-link to="/uploadData">
+          <router-link :to="{path:'/uploadData',query:{PID: MathRound}}">
             <el-tooltip class="item" effect="dark" content="返回上一级" placement="bottom">
                 <i class="iconfont">&#xe60c;</i>
             </el-tooltip>
@@ -35,7 +35,7 @@
             <div data-type="button" class="data-button btn2">
               <!-- <router-link to="/InstrumentBoard">图表</router-link> -->
             </div>
-            <div data-type="button" class="data-button btn3" @click.stop.prevent="_analyiseRestart">重置数据</div>
+            <div data-type="button" class="data-button btn3" @click.stop.prevent="_dataVisual">数据可视化</div>
           </div>
           <div class="left-tab">
             <el-tooltip class="item" effect="dark" content="保存" placement="bottom">
@@ -202,7 +202,7 @@
             </div>
             <div class="bottom-control">
               <div class="bottom-control-item">
-                <el-button size="mini" @click="begin()" type="primary">数据可视化</el-button>
+                <el-button size="mini" @click="begin()" type="primary">检索</el-button>
               </div>
             </div>
           </div>
@@ -218,11 +218,16 @@ document.onselectstart = function() {
 // window.onbeforeunload = function() {
 //   return 'null';
 // };
-import "../../../static/css/handsontable.full.min.css";
+import "./handsontable.full.min.css";
+import { randomString } from "./../../assets/js/common/common";
+import setArr from "./../../assets/js/common/setArr";
 export default {
   data() {
     return {
+      MathRound: randomString(32),
       GLOBALbase: "",
+      MAPOBJ: {}, // 防止在存储中的图表需要的数据
+      TableCore: [], // mounted后从内存中取到的数据
       options: [],
       value8: "1",
       seleArr: [], // 用户选中的部分进行保存
@@ -256,7 +261,7 @@ export default {
     };
   },
   mounted() {
-    if (JSON.stringify(this.$route.query) === "{}") {
+    if (this.$route.query.PID.length < 32) {
       this.$router.push("/");
       return;
     }
@@ -290,11 +295,19 @@ export default {
           arr.push(data[i][j]);
         }
       }
-      localStorage.setItem("start", startCol);
-      localStorage.setItem("end", endCol);
+      // 用户选中的数据
       _this.seleArr = arr;
-      let as = JSON.stringify(arr);
-      localStorage.setItem("as", as);
+      // 选中的数据所生成的图表数据
+      console.log(startCol, endCol);
+      let m = _this.TableCore;
+      let headerArr = m.schema.split(",");
+      _this._findHeader(startCol,endCol,headerArr);
+      _this.MAPOBJ = {
+        x: _this._findHeader(startCol,endCol,headerArr),
+        y: 1
+      };
+      // localStorage.setItem("start", startCol);
+      // localStorage.setItem("end", endCol);
     });
 
     // 搜索事件
@@ -339,6 +352,15 @@ export default {
         return true;
       };
     },
+    _findHeader(i1, i2,arr) {
+      let _this = this;
+      let newArrs = [];
+      if (i1 === i2)return false;
+      for (let i = i1; i <= i2; i++) {
+        newArrs.push(arr[i]);
+      }
+      return newArrs;
+    },
     // 返回某个元素在数组中的位置
     __findIndex(a, x) {
       let len = a.length,
@@ -353,9 +375,8 @@ export default {
         pos += 1; //并从下个位置开始搜索
       }
     },
-    begin() {
-      let newColList = this.newColList;
-      let newRolList = this.newRolList;
+    // 数据可视化
+    _dataVisual() {
       let arr1 = [],
         arr2 = [];
       for (let i = 0, len = newColList.length; i < len; i++) {
@@ -374,9 +395,44 @@ export default {
         ARR.push([this.hot.getDataAtCol(arr2[i])]);
       }
       localStorage.setItem("a2", JSON.stringify(ARR));
-      setTimeout(() => {
-        this.$router.push({ path: "/InstrumentBoard" });
-      }, 300);
+      // setTimeout(() => {
+      //   this.$router.push({ path: "/InstrumentBoard" });
+      // }, 300);
+    },
+    begin() {
+      let newColList = this.newColList,
+        newRolList = this.newRolList,
+        self = this,
+        m = JSON.parse(localStorage.getItem("tableData")),
+        colName = [];
+      self.newRolList.forEach(item => {
+        colName.push(item.name);
+      });
+      if (!m) {
+        // 如果内存被清除的情况
+      }
+      // let data = {
+      //   tableName: "uptest1",
+      //   colName: "city"
+      // };
+      let data = {
+        tableName: m.Hivetable,
+        colName: colName.join(",")
+      };
+
+      console.log(m);
+      // _this.dataVal = setArr(m.data);
+      // _this.hot.loadData(setArr(m.data));
+      // rolsList  这里的。 newRolList
+      self
+        .$Http({
+          url: self.URL.ip2 + "searchbysql",
+          method: "post",
+          data: data
+        })
+        .then(m => {
+          console.log(m);
+        });
     },
     // 初始化滚动条
     PsInit(dom) {
@@ -657,55 +713,7 @@ export default {
       // 加载 loading
       // 拿到数据后并且保存到后端
     },
-    __MAX() {
-      let _this = this;
-      _this.GLOBALbase = "";
-      if (_this.flagOfsel) {
-        _this.hot.selectCell(
-          _this.startRow,
-          _this.startCol,
-          _this.endRow,
-          _this.endCol
-        );
-        let ary = _this.seleArr;
-        let maxN = eval("Math.max(" + ary.join() + ")");
-        this.GLOBALbase = `MAX=${maxN}`;
-        // _this.flagOfsel = false;
-      }
-    },
-    __MIN() {
-      let _this = this;
-      _this.GLOBALbase = "";
-      if (_this.flagOfsel) {
-        _this.hot.selectCell(
-          _this.startRow,
-          _this.startCol,
-          _this.endRow,
-          _this.endCol
-        );
-        let ary = _this.seleArr;
-        let minN = eval("Math.min(" + ary.join() + ")");
-        this.GLOBALbase = `MIN=${minN}`;
-        // _this.flagOfsel = false;
-      }
-    },
-    __AVERAGE() {
-      let _this = this;
-      _this.GLOBALbase = "";
-      if (_this.flagOfsel) {
-        _this.hot.selectCell(
-          _this.startRow,
-          _this.startCol,
-          _this.endRow,
-          _this.endCol
-        );
-        let arr = _this.seleArr;
-        let sum = eval(arr.join("+"));
-        let average = ~~(sum / arr.length * 100) / 100;
-        this.GLOBALbase = `AVG=${average}`;
-        // _this.flagOfsel = false;
-      }
-    },
+
     // 全局搜索高亮
     _GlobalSearch() {
       let _this = this,
@@ -716,54 +724,43 @@ export default {
       });
     },
 
-    // 载入数据
+    // 第一次载入数据
     _loadData() {
       let _this = this;
-      _this
-        .$Http({
-          url: "algoDispatch/wind"
-        })
-        .then(m => {
-          // _this.hot.loadData(_this.dataVal);
-          _this.dataVal = m.attribute;
-          _this.hot.loadData(m.data);
-          // 更新设置，写入表头
-          _this.hot.updateSettings({
-            colHeaders: m.attribute
-          });
-          // colsList,rolsList
-          // 将$nextTick()放在服务端返回数据后进行使用。
-          _this.rolsList = _this.__CreatObj(m.measure);
-          _this.colsList = _this.__CreatObj(m.dimension);
-          // 在内存中存储表头数据。
-          localStorage.setItem("tableHeaders", JSON.stringify(m.attribute));
-          _this.$nextTick(() => {
-            let lis1 = document.querySelectorAll("li.itemlist1"),
-              dustbin1 = document.querySelector("div.dustbin1");
-            _this.DRAGTHINGCol(
-              lis1,
-              dustbin1,
-              _this.colsList,
-              _this.newColList,
-              1
-            );
-            let lis2 = document.querySelectorAll("li.itemlist2"),
-              dustbin2 = document.querySelector(".dustbin2");
-            _this.DRAGTHINGCol(
-              lis2,
-              dustbin2,
-              _this.rolsList,
-              _this.newRolList,
-              2
-            );
-          });
-        });
+      let m = JSON.parse(localStorage.getItem("tableData"));
+      if (!m) return false;
+      _this.TableCore = JSON.parse(localStorage.getItem("tableData"));
 
-      // Handsontable.dom.addEvent(_this.$refs.btn111, "click", function(event) {
-      //   console.log("loadDataing...");
-      //   _this.hot.loadData(_this.dataVal);
-      //   console.log("loadDataed...");
-      // });
+      // 设置表头
+      _this.hot.updateSettings({
+        colHeaders: m.schema.split(",")
+      });
+      // 载入数据
+      _this.dataVal = setArr(m.data);
+      _this.hot.loadData(setArr(m.data));
+
+      // m.dimentions 维度 colsList
+      console.log(m);
+      console.log(m.dimensions);
+      // dimensions
+
+      try {
+        _this.colsList = _this.__CreatObj(m.dimensions.split(","));
+      } catch (e) {
+        _this.colsList = _this.__CreatObj([m.dimensions]);
+      }
+      // m.matrics 度量 rolsList
+      _this.rolsList = _this.__CreatObj(m.matrics.split(","));
+
+      // 等到dom渲染完成，添加事件
+      _this.$nextTick(() => {
+        let lis1 = document.querySelectorAll("li.itemlist1"),
+          dustbin1 = document.querySelector("div.dustbin1");
+        _this.DRAGTHINGCol(lis1, dustbin1, _this.colsList, _this.newColList, 1);
+        let lis2 = document.querySelectorAll("li.itemlist2"),
+          dustbin2 = document.querySelector(".dustbin2");
+        _this.DRAGTHINGCol(lis2, dustbin2, _this.rolsList, _this.newRolList, 2);
+      });
     },
     // 求和操作
     _calAdd() {
@@ -790,11 +787,59 @@ export default {
         this.GLOBALbase = `SUM=${result}`;
         // _this.flagOfsel = false;
       }
-    }
-
+    },
     // 求最大值
+    __MAX() {
+      let _this = this;
+      _this.GLOBALbase = "";
+      if (_this.flagOfsel) {
+        _this.hot.selectCell(
+          _this.startRow,
+          _this.startCol,
+          _this.endRow,
+          _this.endCol
+        );
+        let ary = _this.seleArr;
+        let maxN = eval("Math.max(" + ary.join() + ")");
+        this.GLOBALbase = `MAX=${maxN}`;
+        // _this.flagOfsel = false;
+      }
+    },
     // 求最小值
+    __MIN() {
+      let _this = this;
+      _this.GLOBALbase = "";
+      if (_this.flagOfsel) {
+        _this.hot.selectCell(
+          _this.startRow,
+          _this.startCol,
+          _this.endRow,
+          _this.endCol
+        );
+        let ary = _this.seleArr;
+        let minN = eval("Math.min(" + ary.join() + ")");
+        this.GLOBALbase = `MIN=${minN}`;
+        // _this.flagOfsel = false;
+      }
+    },
     // 求平均值
+    __AVERAGE() {
+      let _this = this;
+      _this.GLOBALbase = "";
+      if (_this.flagOfsel) {
+        _this.hot.selectCell(
+          _this.startRow,
+          _this.startCol,
+          _this.endRow,
+          _this.endCol
+        );
+        let arr = _this.seleArr;
+        let sum = eval(arr.join("+"));
+        let average = ~~(sum / arr.length * 100) / 100;
+        this.GLOBALbase = `AVG=${average}`;
+        // _this.flagOfsel = false;
+      }
+    }
   }
 };
 </script>
@@ -861,16 +906,16 @@ export default {
   width: 100%;
   line-height: 30px;
   position: absolute;
-  background: #C0C0BA;
+  background: #c0c0ba;
   color: #fff;
   padding-left: 15px;
 }
-.left-com-bottom .title1{
+.left-com-bottom .title1 {
   top: 0;
   left: 0;
 }
-.left-com-bottom .title2{
- top: 182px;
+.left-com-bottom .title2 {
+  top: 182px;
   left: 0;
 }
 .left-com-bottom .bottom {
@@ -1102,8 +1147,8 @@ export default {
   /* border: 1px solid #cacaca; */
   border-radius: 4px 4px 0 0;
   /* background: rgba(238, 238, 238, 0.8); */
-  background-color:#2d2b32;
-  opacity: .85;
+  background-color: #2d2b32;
+  opacity: 0.85;
   color: #fff;
 }
 

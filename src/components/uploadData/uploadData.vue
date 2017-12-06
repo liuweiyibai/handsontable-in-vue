@@ -8,7 +8,7 @@
     <div class="Maincontent detail-addFile">
       <div class="header">
         <div class="search-bar">
-          <el-input size="small" placeholder="输入关键词">
+          <el-input size="small" placeholder="输入关键词" v-model="keyWords">
           <i slot="suffix" class="el-input__icon el-icon-search"  @click="handleIconClick"></i>
           </el-input>
         </div>
@@ -18,20 +18,20 @@
       </div>
       <div class="main">
         <el-table :data="tableData" border max-height="400">
-          <el-table-column prop="date" label="名称">
+          <el-table-column prop="filename" label="文件名称">
           </el-table-column>
-          <el-table-column prop="name" label="所有者">
+          <el-table-column prop="filetype" label="文件类型">
           </el-table-column>
-          <el-table-column prop="province" label="修改时间">
+          <el-table-column prop="Createtime" label="创建时间">
           </el-table-column>
-          <el-table-column prop="city" label="数据源">
+          <el-table-column prop="username" label="所有者">
           </el-table-column>
-          <el-table-column label="操作">
+          <el-table-column label="操作"> -->
             <template slot-scope="scope">
-              <el-button @click="handleClickToForm(scope.$index,scope.row.number)" type="text" size="small">表格分析</el-button>
+              <el-button @click="handleClickToForm(scope.row.recordID)" type="text" size="small">表格分析</el-button>
               <!-- <el-button @click="handleClickToInstrumentBoard()" type="text" size="small">仪表盘分析</el-button> -->
-            </template>
-          </el-table-column>
+            </template> 
+         </el-table-column>
         </el-table>
       </div>
     </div>
@@ -40,7 +40,7 @@
       <el-dialog title="新建数据源" :visible.sync="dialogVisible" width="30%">
         <div class="dialog-top" title="本地数据文件">
           <div class="img-content">
-            <router-link to="/uploadData/addFile">
+            <router-link :to="{path:'uploadData/addFile',query:{PID:MathRound}}">
               <div class="top-img1">
                 <div class="img">
                   <img src="../../assets/img/db_46_big.png" alt="" style="width:100%;height:100%;">
@@ -50,7 +50,7 @@
                 </p>
               </div>
             </router-link>
-            <router-link to="/uploadData/addFile">
+            <router-link :to="{path:'uploadData/addFile',query:{PID:MathRound}}">
               <div class="top-img1">
                 <div class="img">
                   <img src="../../assets/img/db_47_big.png" alt="" style="width:100%;height:100%;">
@@ -71,37 +71,84 @@
   </div>
 </template>
 <script>
-import { MathRound } from '../../assets/js/common/MathRound'
+import setArr from "./../../assets/js/common/setArr";
+import { randomString } from "../../assets/js/common/common";
 export default {
   data() {
     return {
-      tableData: [{
-        date: '2017-11-13',
-        name: '风机训练数据',
-        province: '2017-11-13',
-        city: 100000
-      }],
+      MathRound: randomString(32),
+      tableData: [],
+      keyWords: null,
       dialogVisible: false
-    }
+    };
+  },
+  mounted() {
+    let that = this;
+    let data = {
+      userID: 1001
+    };
+    that
+      .$Http({
+        url: that.URL.ip2 + "listfiles",
+        method: "post",
+        data: data
+      })
+      .then(m => {
+        if (m.status == 200) {
+          that.tableData = m.filelist;
+        }
+      });
   },
   methods: {
     // 表格的搜索
     handleIconClick(data) {
       console.log(data);
+      // keyWords
     },
     // 切换到表格
-    handleClickToForm(one, two) {
-      let pwd = one + MathRound(3);
-      this.$router.push({ path: '/Form', query: { pwd: pwd }, params: { name: "nitem" } });
+    handleClickToForm(id) {
+      if (!!id) {
+        let Tid = id,
+          self = this;
+        let data = {
+          recordID: 40
+        };
+        self
+          .$Http({
+            url: self.URL.ip2 + "showanalysetable",
+            method: "post",
+            data: data
+          })
+          .then(m => {
+            console.log(m);
+            // tableData
+
+            if (m.status == 400) {
+              self.$message("文件不存在，请刷新重试!");
+              return false;
+            }
+            localStorage.setItem("tableData", JSON.stringify(m));
+
+            this.$router.push({
+              path: "/Form",
+              query: {
+                PID: randomString(32)
+              }
+            });
+          });
+      }
     },
     // 切换到仪表盘
     handleClickToInstrumentBoard() {
       this.$router.push({
-        path:"/InstrumentBoard"
-      })
+        path: "/InstrumentBoard",
+        query: {
+          PID: randomString(32)
+        }
+      });
     }
   }
-}
+};
 </script>
 <style scoped>
 .container-app {
@@ -113,7 +160,7 @@ export default {
 .container-app .top {
   height: 56px;
   width: 100%;
-  box-shadow: 2px 0 3px 0 rgba(0, 0, 0, .1), 1px 0 1px 0 rgba(0, 0, 0, .1);
+  box-shadow: 2px 0 3px 0 rgba(0, 0, 0, 0.1), 1px 0 1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .container-app .top .content {
@@ -122,11 +169,11 @@ export default {
   padding-top: 8px;
   background-color: transparent;
 }
-.container-app .top .content h2{
-   color: #3FB2FD;
-    display: inline;
+.container-app .top .content h2 {
+  color: #3fb2fd;
+  display: inline;
 }
-   
+
 .container-app .Maincontent {
   padding: 12px 22px;
   box-sizing: border-box;
@@ -153,11 +200,11 @@ export default {
   width: 120px;
   min-height: 120px;
   min-height: 120px;
-  box-shadow: 0 1px 0 0 rgba(0, 0, 0, .1);
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
 }
 
 #dialogUpload .dialog-top .top-img1 .img-text {
-  color: rgba(10, 18, 32, .87);
+  color: rgba(10, 18, 32, 0.87);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -167,21 +214,13 @@ export default {
   left: 30px;
 }
 
-
-
-
-
-
-
-
-
 /*这里是header部分的样式表*/
 
 .detail-addFile {
   position: relative;
 }
 
-.detail-addFile>.header {
+.detail-addFile > .header {
   width: 100%;
   height: 50px;
   color: rgb(102, 102, 102);
@@ -189,16 +228,16 @@ export default {
   justify-content: space-between;
 }
 
-.detail-addFile>.header>.search-bar {
+.detail-addFile > .header > .search-bar {
   float: none;
   padding: 15px 8px;
   padding-top: 8px;
 }
 
-.detail-addFile>.header .tabbar {
+.detail-addFile > .header .tabbar {
   display: inline-flex;
   height: 28px;
-  background: #FFF;
+  background: #fff;
   box-sizing: border-box;
   margin: 10px 20px;
 }
@@ -206,7 +245,7 @@ export default {
 .dialog-footer .txt {
   line-height: 1;
   font-size: 14px;
-  color: #9E9E9E;
+  color: #9e9e9e;
 }
 
 .dialog-footer .txt:first-child {

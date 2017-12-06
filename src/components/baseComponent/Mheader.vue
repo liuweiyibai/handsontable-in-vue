@@ -25,7 +25,6 @@
             </el-menu-item>
           </el-submenu>
         </el-menu>
-       
       </div>
     </nav>
   </div>
@@ -35,15 +34,20 @@ export default {
   data() {
     return {
       activeIndex2: "100",
-      userInfo: ""
+      userInfo: "用户名"
     };
   },
   mounted() {
-    this.userInfo = localStorage.getItem("token");
+    this.userInfo = localStorage.getItem("token")
+      ? localStorage.getItem("token")
+      : this.userInfo;
   },
   methods: {
     loginOut() {
-      this.$router.push("/");
+      this.Cookie("ISLOGIN", null);
+      this.Cookie("TOKEN", null);
+      this.$router.push("/Item2/TraningMission");
+      console.log("clear all CACHE and login out successful！");
     }
   }
 };
@@ -75,7 +79,7 @@ export default {
   height: 60px;
   text-align: left;
   padding-left: 25px;
-      box-shadow: 1px -1px 10px #ccc;
+  box-shadow: 1px -1px 10px #ccc;
   box-sizing: border-box;
   float: left;
   cursor: pointer;
@@ -93,7 +97,7 @@ export default {
   width: calc(100% - 220px);
   height: inherit;
   text-align: right;
-  padding: 0 20px;
+  padding: 0 45px;
   color: #727881;
   box-shadow: 5px 5px 10px #ccc;
   border-color: #ccc;
@@ -101,10 +105,10 @@ export default {
 }
 .nav-right ul.nav-right-list-help {
   border-right: 0 none !important;
-  float:right;
-  padding-top:3px;
+  float: right;
+  padding-top: 3px;
 }
-.nav-right ul.nav-right-list-help .iconfont{
+.nav-right ul.nav-right-list-help .iconfont {
   font-size: 20px;
 }
 .nav-right-list {

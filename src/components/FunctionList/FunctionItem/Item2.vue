@@ -392,6 +392,7 @@
   </div>
 </template>
 <script>
+import { randomString } from "./../../../assets/js/common/common";
 export default {
   data() {
     return {
@@ -523,6 +524,17 @@ export default {
     i2.onselectstart = function() {
       return false;
     };
+
+    let datas = {
+      name: "111"
+    };
+    this.$Http({
+      url: "http://10.1.4.170:5080/DataAnalyzePlatformBA/algoDispatch/demo",
+      method: "post",
+      data: datas
+    }).then(m => {
+      console.log(m);
+    });
     this.AlgorithmOfTaskFuntion(); // 获取算法任务列表
   },
   methods: {
@@ -744,8 +756,9 @@ export default {
     },
     // 创建算法任务,获取算法列表
     AlgorithmOfTaskFuntion() {
-      this.$Http
-        .get("algoDispatch/selectAlgoname")
+      let that = this;
+      that.$Http
+        .get(that.URL.ip1 + "algoDispatch/selectAlgoname?userId=" + this.ID)
         .then(m => {
           this.arithmeticList = m;
         })
@@ -776,7 +789,7 @@ export default {
       }
       self
         .$Http({
-          url: "algoDispatch/algoCreateJob",
+          url: self.URL.ip1 + "algoDispatch/algoCreateJob",
           method: "post",
           data: self.QS.stringify(params)
         })
@@ -812,7 +825,7 @@ export default {
       params.append("tag", 1);
       self
         .$Http({
-          url: "algoDispatch/selectAlgoTaskmoney",
+          url: self.URL.ip1 + "algoDispatch/selectAlgoTaskmoney",
           method: "post",
           data: params
         })
@@ -841,9 +854,10 @@ export default {
         // 发送请求获取参数
         let params = new URLSearchParams();
         params.append("algoId", str);
+        params.append("userId", self.ID);
         self
           .$Http({
-            url: "algoDispatch/algoParamName",
+            url: self.URL.ip1 + "algoDispatch/algoParamName",
             method: "post",
             data: params
           })
@@ -861,14 +875,14 @@ export default {
     SelectInputDataFunc(userid) {
       let self = this;
       userid = self.ID;
-      if (userid) {
+      if (!!userid) {
         self.dialogObj.SelectInputDataDialog = true;
         // 发送请求获取参数
         let params = new URLSearchParams();
         params.append("userId", userid);
         self
           .$Http({
-            url: "offline/userDataList",
+            url: self.URL.ip1 + "offline/userDataList",
             method: "post",
             data: params
           })
@@ -935,7 +949,7 @@ export default {
       params.append("trainParam", str);
       self
         .$Http({
-          url: "algoDispatch/algoTrain",
+          url: self.URL.ip1 + "algoDispatch/algoTrain",
           method: "post",
           data: params
         })
@@ -973,13 +987,14 @@ export default {
         return;
       }
       params.append("trainID", tid);
+      params.append("userId", self.ID);
       for (let i = 0, l = self.step.length; i < l; i++) {
         self.step[i].show = false;
       }
       self.step[0].show = true;
       self
         .$Http({
-          url: "algoDispatch/seleceTrainStatus",
+          url: self.URL.ip1 + "algoDispatch/seleceTrainStatus",
           method: "post",
           data: params
         })
@@ -1016,7 +1031,7 @@ export default {
         });
       self
         .$Http({
-          url: "algoDispatch/selectAlgoTrainkmoney",
+          url: self.URL.ip1 + "algoDispatch/selectAlgoTrainkmoney",
           method: "post",
           data: params
         })
@@ -1047,7 +1062,7 @@ export default {
       self.btnLoading.publish = true;
       self
         .$Http({
-          url: "algoDispatch/alogDeploy",
+          url: self.URL.ip1 + "algoDispatch/alogDeploy",
           method: "post",
           data: params
         })
@@ -1081,9 +1096,10 @@ export default {
         return;
       }
       params.append("deployID", sid);
+      params.append("userId", self.ID);
       self
         .$Http({
-          url: "algoDispatch/seleceDeploy",
+          url: self.URL.ip1 + "algoDispatch/seleceDeploy",
           method: "post",
           data: params
         })
@@ -1107,7 +1123,7 @@ export default {
       let pid = localStorage.getItem("pubid");
       this.$router.push({
         path: "/Item2/TraningMission",
-        query: { pid: pid }
+        query: { pid: pid, PID: randomString(32) }
       });
     },
     // 离线数据分析中的输入数据
@@ -1122,7 +1138,7 @@ export default {
         params.append("userId", userid);
         self
           .$Http({
-            url: "offline/userDataList",
+            url: self.URL.ip1 + "offline/userDataList",
             method: "post",
             data: params
           })
@@ -1153,7 +1169,7 @@ export default {
         });
       self
         .$Http({
-          url: "algoDispatch/selectAlgoTrainkmoney",
+          url: self.URL.ip1 + "algoDispatch/selectAlgoTrainkmoney",
           method: "post",
           data: params
         })
@@ -1189,7 +1205,7 @@ export default {
       params.append("dataParameter", "");
       self
         .$Http({
-          url: "algoDispatch/offlineTask",
+          url: self.URL.ip1 + "algoDispatch/offlineTask",
           method: "post",
           data: params
         })
@@ -1222,9 +1238,10 @@ export default {
       }
       self.step[2].show = true;
       params.append("offlineID", aid);
+      params.append("userId", self.ID);
       self
         .$Http({
-          url: "algoDispatch/seleceOffineStatus",
+          url: self.URL.ip1 + "algoDispatch/seleceOffineStatus",
           method: "post",
           data: params
         })
@@ -1249,13 +1266,12 @@ export default {
     inquireoffline() {
       let aid = this.offlineDataid;
       localStorage.setItem("offlineDataid", aid);
-      setTimeout(()=>{
+      setTimeout(() => {
         this.$router.push({
-        path: "/Item2/TraningMission",
-        query: { aid: aid }
+          path: "/Item2/TraningMission",
+          query: { aid: aid, PID: randomString(32) }
+        });
       });
-      })
-      
     },
     // 文件上传
     fileUpload(file) {
@@ -1269,7 +1285,7 @@ export default {
       formdate.append("file", file);
       self
         .$Http({
-          url: "upload/test",
+          url: self.URL.ip1 + "upload/test",
           method: "post",
           data: formdate,
           config
@@ -1288,7 +1304,7 @@ export default {
 #item2 .el-table__body-wrapper {
   overflow: hidden !important;
 }
-#item2 .el-tabs__nav-wrap::after{
+#item2 .el-tabs__nav-wrap::after {
   width: 88%;
 }
 #item2-ul {
@@ -1361,19 +1377,6 @@ export default {
 .bg-content:hover {
   z-index: 99;
   background-color: #fff;
-}
-.div-foo {
-  margin: 0 auto;
-  width: 90%;
-  padding: 14px 26px 14px 13px;
-  border-radius: 8px;
-  box-sizing: border-box;
-  border: 1px solid #e6ebf5;
-  background-color: #fff;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  transition: opacity 0.3s, transform 0.3s, left 0.3s, right 0.3s, top 0.4s,
-    bottom 0.3s;
-  overflow: hidden;
 }
 .bg-content {
   box-sizing: border-box;

@@ -116,8 +116,8 @@ export default {
         OutLine: [],
         case: []
       },
-      tableData:{
-        lixianshuju:[]
+      tableData: {
+        lixianshuju: []
       },
       TranningInquire: {},
       activeName: "first",
@@ -137,9 +137,9 @@ export default {
     this.inquireAlgoMessioin();
   },
   methods: {
-   DOWNLOAD(scope) {
+    DOWNLOAD(scope) {
       let self = this;
-      let url = `${this.$Http.defaults.baseURL}/down/test?filename=${scope.row
+      let url = `${self.URL.ip1}/down/test?filename=${scope.row
         .name}&id=${scope.row.id}&userId=${self.ID}`;
       let a = document.createElement("a");
       a.href = url;
@@ -164,7 +164,7 @@ export default {
         d.getSeconds();
       return tt;
     },
-     // 文件大小过滤器
+    // 文件大小过滤器
     __Filesize(row, column) {
       let filesize = row[column.property];
       if (parseInt(filesize) == 0) return "0 B";
@@ -236,7 +236,7 @@ export default {
       // tag 表示已完成状态下
       params.append("tag", "1");
       self.$Http
-        .post("algoDispatch/selectAlgoTaskmoney", params)
+        .post(self.URL.ip1 + "algoDispatch/selectAlgoTaskmoney", params)
         .then(m => {
           this.table.dataBaseCreat = m[0].data;
         })
@@ -251,7 +251,7 @@ export default {
       // tag 表示已完成状态下
       params.append("tag", "1");
       this.$Http
-        .post("algoDispatch/selectAlgoTrainkmoney", params)
+        .post(this.URL.ip1 + "algoDispatch/selectAlgoTrainkmoney", params)
         .then(m => {
           this.table.dataBaseTranning = m[0].data;
         })
@@ -266,7 +266,7 @@ export default {
       // tag 表示已完成状态下
       params.append("tag", "1");
       this.$Http
-        .post("algoDispatch/selectAlgoOfflinekmoney", params)
+        .post(this.URL.ip1 + "algoDispatch/selectAlgoOfflinekmoney", params)
         .then(m => {
           this.table.OutLine = m[0].data;
         })
@@ -281,7 +281,7 @@ export default {
       params.append("tag", "1");
       params.append("userId", this.ID);
       this.$Http
-        .post("algoDispatch/selectAlgoDeploykmoney", params)
+        .post(this.URL.ip1 + "algoDispatch/selectAlgoDeploykmoney", params)
         .then(m => {
           console.log(m);
           this.table.case = m[0].data;
@@ -296,9 +296,10 @@ export default {
       let self = this;
       let params = new URLSearchParams();
       params.append("evalId", evalid);
+      params.append('userId',self.ID);
       self
         .$Http({
-          url: "algoDispatch/evalData",
+          url: self.URL.ip1 + "algoDispatch/evalData",
           method: "post",
           data: params
         })
@@ -315,7 +316,7 @@ export default {
       params.append("userId", this.ID);
       params.append("id", aid);
       this.$Http({
-        url: "offline/dataInfoById",
+        url: this.URL.ip1 + "offline/dataInfoById",
         method: "post",
         data: params
       }).then(m => {

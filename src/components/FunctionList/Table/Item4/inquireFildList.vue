@@ -50,7 +50,7 @@ export default {
     params.append("userId", self.ID);
     self
       .$Http({
-        url: "offline/userDataList",
+        url: self.URL.ip1+"offline/userDataList",
         method: "post",
         data: params
       })
@@ -82,7 +82,7 @@ export default {
     },
     DOWNLOAD(scope) {
       let self = this;
-      let url = `${this.$Http.defaults.baseURL}/down/test?filename=${scope.row.name
+      let url = `${self.URL.ip1}/down/test?filename=${scope.row.name
       }&id=${scope.row.id}&userId=${self.ID}`
      let a = document.createElement("a");
           a.href = url;

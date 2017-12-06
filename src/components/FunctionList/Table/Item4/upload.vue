@@ -105,7 +105,7 @@ import { getStr } from "../../../../assets/js/common/common";
 export default {
   data() {
     return {
-      fileCoplate:true,
+      fileCoplate: true,
       divShowOrHide: [
         {
           divshow: true,
@@ -120,7 +120,7 @@ export default {
       ],
       dialogRoot: false,
       addNodeDialog: false,
-      newfilePath:"",
+      newfilePath: "",
       nodeModel: null, // 当前点击节点对象
       parentNodeModel: null, // 当前点击节点的父对象
       fileObj: {
@@ -142,16 +142,16 @@ export default {
     CreatArr(arr) {
       let newArr = [];
       for (let i = 0, len = arr.length; i < len; i++) {
-        newArr.push({        
-          id: Math.random(100)+ i + 1,
+        newArr.push({
+          id: Math.random(100) + i + 1,
           name: getStr(arr[i], "/"),
           iconClass: "iconClassRoot",
           url: arr[i],
-          path:arr[i],
-          clickNode:false,
-          isFolder:false,
-          isExpand:false,
-          loadNode:0,
+          path: arr[i],
+          clickNode: false,
+          isFolder: false,
+          isExpand: false,
+          loadNode: 0,
           children: []
         });
       }
@@ -164,13 +164,14 @@ export default {
       } else {
         let params = new URLSearchParams();
         params.append("userId", this.ID);
-        params.append("newPath",id);
+        params.append("newPath", id);
         this.$Http({
-          url: "upload/craetepath",
+          url: this.URL.ip1 + "upload/craetepath",
           method: "post",
           data: params
         }).then(m => {
-          this.newfilePath = '';
+          this.newfilePath = "";
+          this.loadTreeData();
           console.log(m);
         });
       }
@@ -189,7 +190,7 @@ export default {
       params.append("newPath", "/");
       self
         .$Http({
-          url: "upload/getpath",
+          url: self.URL.ip1 + "upload/getpath",
           method: "post",
           data: params
         })
@@ -211,25 +212,28 @@ export default {
         // 请注意 id 不能重复哦。
         if (m.hasOwnProperty("children")) {
           m.loadNode = 1; // 正在加载节点
-          this.$Http({
-            url: "upload/getpath",
-            method: "post",
-            data: params
-          }).then(result => {
-            m.loadNode = 2; // 节点加载完毕
-            m.isFolder = !m.isFolder;
-            m.children = self.CreatArr(result.paths);
-          });
+          self
+            .$Http({
+              url: self.URL.ip1 + "upload/getpath",
+              method: "post",
+              data: params
+            })
+            .then(result => {
+              m.loadNode = 2; // 节点加载完毕
+              m.isFolder = !m.isFolder;
+              m.children = self.CreatArr(result.paths);
+            });
         }
       }
     },
     // 新增节点
     addNode() {
       let self = this;
+      let url = "";
       if (self.nodeModel) {
         self.addNodeDialog = false;
-        let name = self.newfilePath,
-        url = self.nodeModel.path+'/'+self.newfilePath;
+        let name = self.newfilePath;
+        url = self.nodeModel.path + "/" + self.newfilePath;
         self.nodeModel.children.push({
           id: Math.random(100),
           name: name,
@@ -244,7 +248,22 @@ export default {
         self.newFileHttp(url);
         self.nodeModel.isFolder = true;
       } else {
-        self.$message("请选中节点");
+        self.addNodeDialog = false;
+        let name = self.newfilePath,
+          url = "/" + self.newfilePath;
+        self.treeData.push({
+          id: Math.random(100),
+          name: name,
+          iconClass: "iconClassRoot",
+          clickNode: false,
+          isFolder: false,
+          isExpand: false,
+          path: url,
+          loadNode: 0,
+          children: []
+        });
+        self.newFileHttp(url);
+        // self.nodeModel.isFolder = true;
       }
     },
     // 新建文件夹名称过滤器
@@ -265,6 +284,7 @@ export default {
       let formdate = new FormData(),
         self = this;
       formdate.append("file", file);
+      formdate.append("userId", self.ID);
       let config = {
         headers: {
           "Content-Type": "multipart/form-data"
@@ -272,7 +292,8 @@ export default {
       };
       self
         .$Http({
-          url: "upload/test",
+          url: self.URL.ip1 + "upload/test",
+          // url: self.URL.ip2 + "uploadFile",
           method: "post",
           data: formdate,
           config
@@ -297,19 +318,6 @@ export default {
     prevStep() {
       this.CHANGETAB(0);
     },
-    MuataionfilePath(p) {
-      let self = this,
-        params = new URLSearchParams();
-      params.append("userId", self.ID);
-      params.append("newPath", p);
-      self
-        .$Http({
-          url: "upload/getpath",
-          method: "post",
-          data: params
-        })
-        .then(m => {});
-    },
     // 最后提交操作
     mutation() {
       let param = new URLSearchParams(),
@@ -317,22 +325,23 @@ export default {
       param.append("filename", self.fileObj.filename);
       param.append("label", self.fileObj.label);
       param.append("path", self.fileObj.path);
+      param.append("userId", self.ID);
       param.append("describe", self.fileObj.describe);
       param.append(
         "hdfsname",
-        self.seleFilePath == '' ? "/" : self.seleFilePath
+        self.seleFilePath == "" ? "/" : self.seleFilePath
       );
       self
         .$Http({
-          url: "upload/upLoadFileParam",
+          url: self.URL.ip1 + "upload/upLoadFileParam",
           method: "post",
           data: param
         })
         .then(m => {
           this.message("提交成功");
           this.$router.push({
-            path:"/Item4/Inquire"
-          })
+            path: "/Item4/Inquire"
+          });
         })
         .catch(err => {
           console.log(err);

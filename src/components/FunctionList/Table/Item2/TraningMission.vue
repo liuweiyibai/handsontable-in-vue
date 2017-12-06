@@ -34,7 +34,7 @@ export default {
     DOWNLOAD(scope) {
       setTimeout(() => {
         let self = this;
-        let url = `${this.$Http.defaults.baseURL}/down/test?filename=${scope.row
+        let url = `${self.URL.ip1}/down/test?filename=${scope.row
           .name}&id=${scope.row.id}&userId=${self.ID}`;
         let a = document.createElement("a");
         a.href = url;
@@ -47,7 +47,7 @@ export default {
       params.append("userId", this.ID);
       params.append("id", aid);
       this.$Http({
-        url: "offline/dataInfoById",
+        url: this.URL.ip1+"offline/dataInfoById",
         method: "post",
         data: params
       }).then(m => {

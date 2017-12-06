@@ -94,3 +94,16 @@
     width: 80%;
     cursor: pointer;
 }
+.div-foo {
+    margin: 0 auto;
+    width: 90%;
+    padding: 14px 26px 14px 13px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    border: 1px solid #e6ebf5;
+    background-color: #fff;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    transition: opacity 0.3s, transform 0.3s, left 0.3s, right 0.3s, top 0.4s,
+      bottom 0.3s;
+    overflow: hidden;
+  }

@@ -1,21 +1,16 @@
 import axios from 'axios';
-import {
-  Loading,
-  Message
-} from 'element-ui';
+import {Loading, Message} from 'element-ui';
 
 const instance = axios.create({
-  // http://10.1.4.180:4080/DataAnalyzePlatformBA;
-  baseURL: "http://10.1.4.170:5080/DataAnalyzePlatformBA",
-  // timeout: 50000,
   // 数据响应前处理函数
   transformResponse: [function (data) {
-    return data;
-  }]
+      return data;
+    }
+  ]
 });
-instance.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-instance.defaults.headers.common['Authorization'] = "AUTH_TOKEN";
-
+// instance.defaults.headers["Content-Type"] = "application/json;charset=UTF-8";
+// instance.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+instance.defaults.headers.common['Authorization'] = "JSON.parse(localStorage.getItem('ID'))";
 instance.withCredentials = true;
 // loading对象实例
 let loadinginstace = {};
@@ -24,20 +19,17 @@ instance
   .interceptors
   .request
   .use((config) => {
-    loadinginstace = Loading.service({
-      fullscreen: true
-    });
+    loadinginstace = Loading.service({fullscreen: true});
     if (config.method === 'post') {}
     return config;
   }, (error) => {
     loadinginstace.close();
-    window.location.reload();
-    Message.error({
-      message: '加载超时！'
-    })
+    window
+      .location
+      .reload();
+    Message.error({message: '加载超时！'})
     return Promise.reject(error);
   });
-
 
 // 拦截器2：响应拦截器
 instance
@@ -45,12 +37,17 @@ instance
   .response
   .use((data) => {
     loadinginstace.close();
-    return JSON.parse(data.data);;
+    if (data.status === 100) {
+      Message.error({message: '登录信息失效，请重新登录'});
+      window.location.href = "/login.html";
+      return;
+    } else {
+      // console.log(data);
+      return JSON.parse(data.data);;
+    }
   }, error => {
     loadinginstace.close();
-    Message.error({
-      message: '加载失败'
-    });
+    Message.error({message: '加载失败'});
     return Promise.reject(error);
   });
 
