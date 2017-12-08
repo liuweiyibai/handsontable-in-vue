@@ -100,7 +100,6 @@ export default {
   padding: 0 45px;
   color: #727881;
   box-shadow: 5px 5px 10px #ccc;
-  border-color: #ccc;
   background: #fff;
 }
 .nav-right ul.nav-right-list-help {

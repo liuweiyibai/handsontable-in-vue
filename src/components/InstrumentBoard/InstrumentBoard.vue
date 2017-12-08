@@ -5,7 +5,7 @@
         <div class="sidebar">
           <ul class="ulOne unstyled">
             <li style="height:30px; line-height:30px;padding-left:10px;position:relative">数据图 
-              <router-link to="/Form?0" style="display:inline;position:absolute;right: 10px;top: 2px;">
+              <router-link :to="{path:'/Form',query:{PID: MathRound}}" style="display:inline;position:absolute;right: 10px;top: 2px;">
                <el-tooltip class="item" effect="dark" content="返回上一级" placement="top">
                 <i class="iconfont" style="font-size:18px;">&#xe60c;</i>
                 </el-tooltip>
@@ -15,20 +15,19 @@
           <ul class="ul1-map widget unstyled">
             <li @click="setOptionA()">
               <a href="javascript:void(0)">
-                <i class="iconfont icon-cloud-pie_chart"></i>
+                <i class="iconfont icon-xianxingtu "></i>
                 折线图
               </a>
             </li>
             <li @click="setOptionB()">
               <a href="javascript:void(0)">
-              <i class="iconfont icon-xianxingtu" ></i>
-              柱状图
-               
+              <i class="iconfont icon-zhuzhuangtu " ></i>
+              柱状图 
               </a>
             </li>
             <li @click="setOptionC()">
               <a href="javascript:void(0)">
-                <i class="iconfont icon-zhuzhuangtu"></i>
+                <i class="iconfont icon-cloud-pie_chart"></i>
                  线性图
               </a>
             </li>
@@ -103,14 +102,17 @@
   </aside>
 </template>
 <script>
+import { randomString } from "./../../assets/js/common/common";
 export default {
   data() {
     return {
+      MathRound: randomString(32),
       mapDOM: Object,
-      // 纵坐标
-      mapData: [],
+      mapCore: null,
       // 横坐标
-      mapHeaders: [],
+      mapX: [],
+      // 纵坐标
+      mapY: [],
       tableHeaders: [],
       Toolpit: [],
 
@@ -135,11 +137,11 @@ export default {
           axisLabel: {
             interval: 0,
             formatter: function(value, index) {
-              if (index % 5 === 0) {
-                return value;
-              } else {
-                return "";
-              }
+              // if (index % 5 === 0) {
+              //   return value;
+              // } else {
+              //   return "";
+              // }
               return value;
             }
           }
@@ -287,16 +289,11 @@ export default {
     loadData() {
       // 获取所有的表头
       // 取到x轴数据
-      this.mapData = JSON.parse(localStorage.getItem("a1"));
-      this.mapHeaders = JSON.parse(localStorage.getItem("a2"));
-      let arr = JSON.parse(localStorage.getItem("headerArr"));
-      let tableHeaders = JSON.parse(localStorage.getItem("tableHeaders"));
-      tableHeaders.forEach((item, index) => {
-        for (let j = 0, lej = arr.length; j < lej; j++) {
-          if (index === arr[j]) {
-            this.Toolpit.push(item);
-          }
-        }
+      let mapCore = (this.mapCore = JSON.parse(localStorage.getItem("MAPOBJ")));
+      this.mapX = mapCore.x;
+      this.mapY = mapCore.y;
+      this.mapX.forEach((item, index) => {
+        this.Toolpit.push(item);
       });
       this.$nextTick(() => {
         this.setOptionA();
@@ -306,19 +303,98 @@ export default {
     setOptionA() {
       this.mapDOM.clear();
       let NewArr = [],
-        arrA = this.mapData,
-        arrB = this.mapHeaders;
-      for (let i = 0, len = arrB.length; i < len; i++) {
+        arrX = this.mapX,
+        arrY = this.mapY;
+      for (let i = 0, len = arrY.length; i < len; i++) {
         NewArr.push({
           name: this.Toolpit[i],
           type: "line",
-          data: arrB[i][0]
+          data: arrY[i]
         });
       }
       this.optionA.legend.data = this.Toolpit;
       this.optionA.series = NewArr;
-      this.optionA.xAxis.data = arrA;
+      this.optionA.xAxis.data = arrX;
       this.mapDOM.setOption(this.optionA, true);
+    },
+    // 柱状图
+    setOptionB() {
+      this.mapDOM.clear();
+      let NewArr = [],
+        arrX = this.mapX,
+        arrY = this.mapY;
+      for (let i = 0, len = arrY.length; i < len; i++) {
+        NewArr.push({
+          name: this.Toolpit[i],
+          type: "bar",
+          data: arrY[i]
+        });
+      }
+      this.optionB.legend.data = this.Toolpit;
+      this.optionB.series = NewArr;
+      this.optionB.xAxis.data = arrX;
+      this.mapDOM.setOption(this.optionB, true);
+    },
+    // 线形图
+    setOptionC() {
+      this.mapDOM.clear();
+      let NewArr = [],
+        arrX = this.mapX,
+        arrY = this.mapY;
+      for (let i = 0, len = arrY.length; i < len; i++) {
+        // this.Toolpit
+        NewArr.push({
+          type: "bar",
+          data: arrY[i],
+          coordinateSystem: "polar",
+          name: this.Toolpit[i],
+          stack: "a"
+        });
+      }
+      this.optionB.legend.data = this.Toolpit;
+      this.optionC.series = NewArr;
+      this.optionC.angleAxis.data = arrX.slice(0, 50);
+      this.mapDOM.setOption(this.optionC, true);
+    },
+    // 阶梯线
+    setOptionD() {
+      this.mapDOM.clear();
+      let NewArr = [],
+        arrX = this.mapX,
+        arrY = this.mapY;
+      for (let i = 0, len = arrY.length; i < len; i++) {
+        // this.Toolpit
+        NewArr.push({
+          name: this.Toolpit[i],
+          type: "line",
+          step: "start",
+          data: arrY[i]
+        });
+      }
+      this.optionD.legend.data = this.Toolpit;
+      this.optionD.series = NewArr;
+      this.optionD.xAxis.data = arrX;
+      this.mapDOM.setOption(this.optionD, true);
+    },
+    setoptionE() {
+      this.mapDOM.clear();
+      let NewArr = [],
+        arrX = this.mapX,
+        arrY = this.mapY;
+      for (let i = 0, len = arrY.length; i < len; i++) {
+        // this.Toolpit
+        NewArr.push({
+          name: this.Toolpit[i],
+          type: "line",
+          stack: "总量",
+          areaStyle: { normal: {} },
+          data: arrY[i]
+        });
+      }
+      this.optionE.legend.data = this.Toolpit;
+      this.optionE.series = NewArr;
+      this.optionE.xAxis.data = arrX;
+      this.mapDOM.setOption(this.optionE, true);
     },
     __ARR(s, e, arr) {
       let newArr = [];
@@ -348,85 +424,6 @@ export default {
       let mm = time.getMinutes(); //分
       let s = time.getSeconds(); //秒
       return `${h}:${mm}:${s}`;
-    },
-    // 柱状图
-    setOptionB() {
-      this.mapDOM.clear();
-      let NewArr = [],
-        arrA = this.mapData,
-        arrB = this.mapHeaders;
-      for (let i = 0, len = arrB.length; i < len; i++) {
-        // this.Toolpit
-        NewArr.push({
-          name: this.Toolpit[i],
-          type: "bar",
-          data: arrB[i][0]
-        });
-      }
-      this.optionB.legend.data = this.Toolpit;
-      this.optionB.series = NewArr;
-      this.optionB.xAxis.data = arrA;
-      this.mapDOM.setOption(this.optionB, true);
-    },
-    // 线形图
-    setOptionC() {
-      this.mapDOM.clear();
-      let NewArr = [],
-        arrA = this.mapData,
-        arrB = this.mapHeaders;
-      for (let i = 0, len = arrB.length; i < len; i++) {
-        // this.Toolpit
-        NewArr.push({
-          type: "bar",
-          data: arrB[i][0],
-          coordinateSystem: "polar",
-          name: this.Toolpit[i],
-          stack: "a"
-        });
-      }
-      this.optionC.legend.data = this.Toolpit;
-      this.optionC.series = NewArr;
-      this.optionC.angleAxis.data = arrA.slice(0, 50);
-      this.mapDOM.setOption(this.optionC, true);
-    },
-    // 阶梯线
-    setOptionD() {
-      this.mapDOM.clear();
-      let NewArr = [],
-        arrA = this.mapData,
-        arrB = this.mapHeaders;
-      for (let i = 0, len = arrB.length; i < len; i++) {
-        // this.Toolpit
-        NewArr.push({
-          name: this.Toolpit[i],
-          type: "line",
-          step: "start",
-          data: arrB[i][0]
-        });
-      }
-      this.optionD.legend.data = this.Toolpit;
-      this.optionD.series = NewArr;
-      this.optionD.xAxis.data = arrA;
-      this.mapDOM.setOption(this.optionD, true);
-    },
-    setoptionE() {
-      let NewArr = [],
-        arrA = this.mapData,
-        arrB = this.mapHeaders;
-      for (let i = 0, len = arrB.length; i < len; i++) {
-        // this.Toolpit
-        NewArr.push({
-          name: this.Toolpit[i],
-          type: "line",
-          stack: "总量",
-          areaStyle: { normal: {} },
-          data: arrB[i][0]
-        });
-      }
-      this.optionE.series = NewArr;
-      this.optionE.legend.data = this.Toolpit;
-      this.optionE.xAxis[0].data = arrA;
-      this.mapDOM.setOption(this.optionE, true);
     }
   }
 };
@@ -449,7 +446,7 @@ a.disabled {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   padding: 20px;
   /* padding-top: 10px; */
- padding-left: 20px;
+  padding-left: 20px;
   font-size: 14px;
 }
 .container-map {
@@ -475,13 +472,13 @@ ol.unstyled {
 }
 .slider-map ul li a:focus {
   background: #35404d;
-    color: #fff;
-    display: block;
-    -webkit-transition: all 0.3s ease;
-    -moz-transition: all 0.3s ease;
-    -o-transition: all 0.3s ease;
-    -ms-transition: all 0.3s ease;
-    transition: all 0.3s ease;
+  color: #fff;
+  display: block;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  transition: all 0.3s ease;
 }
 .widget {
   background: #fff;

@@ -85,7 +85,7 @@ export default {
   mounted() {
     let that = this;
     let data = {
-      userID: 1001
+      Token: String(that.ID)
     };
     that
       .$Http({
@@ -111,7 +111,8 @@ export default {
         let Tid = id,
           self = this;
         let data = {
-          recordID: 40
+          Token:self.ID,
+          recordID: Tid
         };
         self
           .$Http({

@@ -23,8 +23,8 @@
     </div>
     <div class="button-ls">
       <el-button size="mini">上一步</el-button>
-      <el-button size="mini" @click="nextWork()">下一步</el-button>
-      <el-button @click="uploadFile()" size="mini" style="float:left;">上传</el-button>
+      <el-button size="mini" @click="previewFile()">下一步</el-button>
+      <el-button @click="uploadFile()" size="mini" style="float:left;">预览</el-button>
     </div>
     <div class="table-detail" ref="refTable" v-show="tableData3.length > 0">
       <Tables :data="tableData3"></Tables>
@@ -42,6 +42,7 @@ export default {
         userID: 1001,
         userName: "guest"
       },
+      fileObj: {},
       fileNames: "multipartFile",
       fileCoplate: true,
       things: "age",
@@ -70,41 +71,64 @@ export default {
       self.fileNames = file.name;
       self.fileCoplate = false;
     },
-    // 上传文件
-    HttpMutaplile(file) {
+    // 下一步 ：上传文件
+    previewFile() {
       let self = this;
-      if (!file) {
-        Message.error({ message: "请选中文件!" });
-        return;
-      }
       let params = new FormData(),
         config = {
           headers: {
             "Content-Type": "multipart/form-data"
           }
         };
-      params.append("userName", "1111");
-      // params.append("Token", self.ID);
-      params.append("userID",'10001');
+      params.append("Token", self.ID);
+      params.append("multipartFile", self.fileObj);
+    
+      self.$Http({
+        url: self.URL.ip2 + "uploadFile",
+        method: "post",
+        data: params,
+        config
+      }).then(m=>{
+        console.log(m);
+          // self.tableData3 = setArr(m.data);
+      // self.tableData = m;
+      self.nextWork(m);
+      });
+    },
+    // 预览文件
+    HttpMutaplile(file) {
+      let self = this;
+      if (!file) {
+        Message.error({ message: "请选中文件!" });
+        return;
+      }
+      self.fileObj = file.file;
+      let params = new FormData(),
+        config = {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        };
+      params.append("Token", self.ID);
       params.append("multipartFile", file.file);
       self
         .$Http({
-          url: self.URL.ip2 + "uploadFile",
+          url: self.URL.ip2 + "previewFile",
           method: "post",
           data: params,
           config
         })
         .then(m => {
           if (!!m) {
-            console.log(m);
-            self.tableData3 = setArr(m.data);
-            self.tableData = m;
+            m.rows.forEach(item => {
+              self.tableData3.push(item.rowdata.split(","));
+            });
           }
         });
     },
     // 下一步操作
-    nextWork() {
-      localStorage.setItem("tableData", JSON.stringify(this.tableData));
+    nextWork(m) {
+      localStorage.setItem("tableData", JSON.stringify(m));
       this.$router.push({
         path: "/Form",
         query: {

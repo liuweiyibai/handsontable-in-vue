@@ -4,14 +4,14 @@
       <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" 
       active-text-color="#20a0ff" 
       text-color="#ffffff"     
-      background-color="#000D3D" unique-opened router>
+      unique-opened router>
             <template v-for="item in items">
                 <template v-if="item.subs">
                     <el-submenu :index="item.index" :key="item.index">
                         <template slot="title"><i :class="item.icon"></i>{{ item.title }}</template>
                         <el-menu-item v-for="(subItem,i) in item.subs"
                         :key="i" :index="subItem.index" style="padding-left: 15px;">
-                          <i class="el-icon-my" style="font-size:16px;">&#xe604;</i>
+                          <i class="el-me-icon" style="font-size:16px;"></i>
                           {{ subItem.title }}
                         </el-menu-item>
                     </el-submenu>
@@ -123,7 +123,7 @@ export default {
 }
 
 #FunctionList .list-left {
-  width: 220px;
+  width: 200px;
   height: 100%;
   box-sizing: border-box;
   box-shadow: 2px 0 3px 0 rgba(0, 0, 0, 0.1), 1px 0 1px 0 rgba(0, 0, 0, 0.1);
@@ -132,10 +132,16 @@ export default {
 
 #FunctionList .list-left ul {
   height: 100%;
+  background-image: -webkit-linear-gradient(#4562e9 0, #56b5fe 100%),
+    -webkit-radial-gradient(18% 84%, #5888f5 2%, #586ef5 60%, #7558f4 100%);
+  background-image: -o-linear-gradient(#4562e9 0, #56b5fe 100%),
+    -o-radial-gradient(18% 84%, #5888f5 2%, #586ef5 60%, #7558f4 100%);
+  background-image: linear-gradient(#4562e9 0, #56b5fe 100%),
+    radial-gradient(18% 84%, #5888f5 2%, #586ef5 60%, #7558f4 100%);
 }
 
 #FunctionList .list-right {
-  width: calc(100% - 220px);
+  width: calc(100% - 200px);
   box-sizing: border-box;
   height: 100%;
   float: right;
@@ -148,9 +154,13 @@ export default {
 }
 
 .list-left ul.el-submenu .el-menu-item:hover,
-.el-submenu__title:hover,
+.list-left .el-submenu__title:hover,
 .list-left ul.el-menu .el-menu-item:hover {
   background-color: #3498db !important;
+  color: #000 !important;
+}
+.list-left .el-menu-item:focus, .list-left .el-menu-item:hover{
+     background-color: #3498db !important;
   color: #000 !important;
 }
 
@@ -158,9 +168,16 @@ export default {
   border-right: 0 none;
   box-sizing: border-box;
 }
-
+.list-left li.el-menu-item.is-active {
+  color: #000 !important;
+  border-right: 5px solid #2750F2 !important;
+}
+.list-left li.el-menu-item.is-active i.el-me-icon{
+  background-color: #fff;
+}
 .list-left .el-submenu .el-menu .el-menu-item {
-  background-color: #000 !important;
+  padding-left: 45px !important;
+  background-color: #5888f5 !important;
 }
 
 .list-left .el-submenu .el-menu .el-menu-item:hover {
@@ -168,9 +185,21 @@ export default {
   background-color: #3498db !important;
 }
 
+/* el-icon-me */
 .list-left ul.el-menu .el-menu-item i,
 .list-left .el-submenu .el-submenu__title i {
   color: #fff;
+ 
+}
+.list-left ul.el-menu .el-menu-item i.el-me-icon{
+  margin-right: 5px;
+  box-sizing: border-box;
+   width: 8px;
+  height: 8px;
+  border:1px solid #fff;
+  border-radius: 50%;
+  display: inline-block;
+  /* background-color: #fff; */
 }
 .list-left .el-submenu .el-menu .el-menu-item {
   line-height: 40px !important;

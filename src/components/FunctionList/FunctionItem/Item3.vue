@@ -44,14 +44,18 @@
           </div>
         </div>
         <div class="div-common" v-show="divSH[1].divShow">
-          <el-form>
+          <el-form size="mini">
             <el-form-item label="数据处理任务id">
                 <span class="el-span" @click="dialogOBJ.second=true,getBeginMessList();"
                  >{{shujuFunID}}</span>
             </el-form-item>
-            <el-form-item label="参数">
-              <el-input style="width:87%;" type="textarea" v-model="argslist"></el-input>
+             <!-- v-show="JSON.stringify(dynamicParameters) !== '{}'" -->
+        
+            <el-form-item :label="key"  label-width="105px"
+            v-for="(item,key) in dynamicParameters" :key="item.index">
+              <el-input style="width:87%;" type="text" v-model="argslist"></el-input>
             </el-form-item>
+            
           </el-form>
           <div class="btn-footer">
             <!-- <el-button size="small" >取 消</el-button> -->
@@ -92,6 +96,7 @@
 export default {
   data() {
     return {
+      dynamicParameters: {},
       CreatePreprocessingTask: false,
       BeginPreprocessingTask: false,
       dialogOBJ: {
@@ -165,6 +170,9 @@ export default {
     addToCreat(scope) {
       let self = this;
       self.shujuFunName = scope.row.name;
+      // dynamicParameters
+      self.dynamicParameters = JSON.parse(scope.row.args);
+      console.log(self.dynamicParameters);
       self.dialogOBJ.first = false;
     },
     // 取消创建预处理任务

@@ -42,7 +42,7 @@ npm run build --report
 ## 项目路径配置
 ```
 .
-├── build
+├── build (webpack配置文件，无需做更改)
 │   ├── build.js
 │   ├── check-versions.js
 │   ├── dev-client.js
@@ -52,7 +52,7 @@ npm run build --report
 │   ├── webpack.base.conf.js
 │   ├── webpack.dev.conf.js
 │   └── webpack.prod.conf.js
-├── config
+├── config (webpack配置文件，无需做更改)
 │   ├── dev.env.js
 │   ├── index.js
 │   └── prod.env.js
@@ -74,16 +74,16 @@ npm run build --report
 ├── src
 │   ├── App.vue
 │   ├── main.js
-│   ├── Ajax
+│   ├── Ajax http请求封装配合
 │   │   ├── HTTP.js
 │   │   └── IPConfig.js
-│   ├── assets
+│   ├── assets 静态文件
 │   │   ├── css 目录
 │   │   ├── img 目录
-│   │   └── js目录
-│   ├── router
+│   │   └── js 目录
+│   ├── router 路由配置
 │   │   └── index.js
-│   ├── components
+│   ├── components 项目组件
 │   │   ├── baseComponents
 │   │   │   ├── AlgoComplated.vue
 │   │   │   ├── AlgoUndone.vue

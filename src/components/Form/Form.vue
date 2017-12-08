@@ -140,23 +140,24 @@
 
     <!-- 函数列表 -->
     <el-dialog title="函数列表" :visible.sync="dialogFormVisible">
-      <el-form :model="form" size="mini">
-        <el-form-item label="类别" :label-width="formLabelWidth">
+      <el-form size="mini">
+        <!-- <el-form-item label="类别" :label-width="formLabelWidth">
           <el-select v-model="value8" filterable placeholder="请选择">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item label="函数" :label-width="formLabelWidth">
-          <el-select v-model="form.region" placeholder="请选择活动区域">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+        </el-form-item> -->
+        <el-form-item label="函数：" :label-width="formLabelWidth">
+          <el-select v-model="CalculationFormulaSele" placeholder="请选择活动区域">
+            <el-option v-for="item in CalculationFormula" 
+            :key="item.index"
+            :label="item.name" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" size="mini">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false" size="mini">确 定</el-button>
+        <el-button type="primary" @click="makeCalculate()" size="mini">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 控制面板 -->
@@ -246,6 +247,25 @@ export default {
       endRow: 0, //结束行
       endCol: 0, //结束列
       dialogFormVisible: false,
+      CalculationFormula: [
+        {
+          name: "sum",
+          value: "sum"
+        },
+        {
+          name: "max",
+          value: "max"
+        },
+        {
+          name: "min",
+          value: "min"
+        },
+        {
+          name: "avg",
+          value: "avg"
+        }
+      ],
+      CalculationFormulaSele: "sum",
       form: {
         name: "",
         region: "",
@@ -298,24 +318,50 @@ export default {
       // 用户选中的数据
       _this.seleArr = arr;
       // 选中的数据所生成的图表数据
-      console.log(startCol, endCol);
       let m = _this.TableCore;
       let headerArr = m.schema.split(",");
-      _this._findHeader(startCol,endCol,headerArr);
+      _this._findHeader(startCol, endCol, headerArr);
+      // setArr(m.data) // 二维数组
+      let yArr = [];
+      for (let i = startCol, len = endCol; i <= len; i++) {
+        yArr.push(_this.hot.getDataAtCol(i));
+      }
       _this.MAPOBJ = {
-        x: _this._findHeader(startCol,endCol,headerArr),
-        y: 1
+        x:
+          startCol == endCol
+            ? [headerArr[startCol]]
+            : _this._findHeader(startCol, endCol, headerArr),
+        y: yArr
       };
-      // localStorage.setItem("start", startCol);
-      // localStorage.setItem("end", endCol);
     });
 
     // 搜索事件
-    _this._GlobalSearch();
+    // _this._GlobalSearch();
     // 载入表格数据
     _this._loadData();
   },
   methods: {
+    makeCalculate() {
+      let that = this;
+      that.dialogFormVisible = false;
+      let datas = that.CalculationFormulaSele;
+      switch (datas) {
+        case "max":
+          that.__MAX();
+          break;
+        case "min":
+          that.__MIN();
+          break;
+        case "sum":
+          that._calAdd();
+          break;
+        case "avg":
+          that.__AVERAGE();
+          break;
+        default:
+          break;
+      }
+    },
     DRAGTHINGCol(list, dustbin, arr, newArr, flag) {
       let index = 0,
         _this = this;
@@ -352,10 +398,10 @@ export default {
         return true;
       };
     },
-    _findHeader(i1, i2,arr) {
+    _findHeader(i1, i2, arr) {
       let _this = this;
       let newArrs = [];
-      if (i1 === i2)return false;
+      if (i1 === i2) return false;
       for (let i = i1; i <= i2; i++) {
         newArrs.push(arr[i]);
       }
@@ -377,28 +423,49 @@ export default {
     },
     // 数据可视化
     _dataVisual() {
-      let arr1 = [],
-        arr2 = [];
-      for (let i = 0, len = newColList.length; i < len; i++) {
-        arr1.push(this.__findIndex(this.dataVal, newColList[i].name));
+      // let arr1 = [],
+      //   arr2 = [];
+      // for (let i = 0, len = newColList.length; i < len; i++) {
+      //   arr1.push(this.__findIndex(this.dataVal, newColList[i].name));
+      // }
+      // for (let i = 0, len = newRolList.length; i < len; i++) {
+      //   arr2.push(this.__findIndex(this.dataVal, newRolList[i].name));
+      // }
+      // let ARR = [];
+      // localStorage.setItem("headerArr", JSON.stringify(arr2));
+      // localStorage.setItem(
+      //   "a1",
+      //   JSON.stringify(this.hot.getDataAtCol(arr1[0]))
+      // );
+      // for (let i = 0, len = arr2.length; i < len; i++) {
+      //   ARR.push(this.hot.getDataAtCol(arr2[i]));
+      // } // 获取每一列的数据
+      // localStorage.setItem("a2", JSON.stringify(ARR));
+
+      let _this = this;
+      if (!_this.isEmptyObject(_this.MAPOBJ)) {
+        localStorage.setItem("MAPOBJ", JSON.stringify(_this.MAPOBJ));
+      } else {
+        let newArr = [];
+        for (let i = 0, len = _this.hot.countCols(); i < len; i++) {
+          newArr.push(_this.hot.getDataAtCol(i));
+        }
+        let map = {
+          x: _this.TableCore.matrics.split(",") || [],
+          y: newArr
+        };
+        localStorage.setItem("MAPOBJ", JSON.stringify(map));
       }
-      for (let i = 0, len = newRolList.length; i < len; i++) {
-        arr2.push(this.__findIndex(this.dataVal, newRolList[i].name));
-      }
-      let ARR = [];
-      localStorage.setItem("headerArr", JSON.stringify(arr2));
-      localStorage.setItem(
-        "a1",
-        JSON.stringify(this.hot.getDataAtCol(arr1[0]))
-      );
-      for (let i = 0, len = arr2.length; i < len; i++) {
-        ARR.push([this.hot.getDataAtCol(arr2[i])]);
-      }
-      localStorage.setItem("a2", JSON.stringify(ARR));
-      // setTimeout(() => {
-      //   this.$router.push({ path: "/InstrumentBoard" });
-      // }, 300);
+      setTimeout(() => {
+        this.$router.push({
+          path: "/InstrumentBoard",
+          query: {
+            PID: randomString(32)
+          }
+        });
+      }, 300);
     },
+    // 检索
     begin() {
       let newColList = this.newColList,
         newRolList = this.newRolList,
@@ -410,20 +477,12 @@ export default {
       });
       if (!m) {
         // 如果内存被清除的情况
+        return false;
       }
-      // let data = {
-      //   tableName: "uptest1",
-      //   colName: "city"
-      // };
       let data = {
         tableName: m.Hivetable,
         colName: colName.join(",")
       };
-
-      console.log(m);
-      // _this.dataVal = setArr(m.data);
-      // _this.hot.loadData(setArr(m.data));
-      // rolsList  这里的。 newRolList
       self
         .$Http({
           url: self.URL.ip2 + "searchbysql",
@@ -431,7 +490,15 @@ export default {
           data: data
         })
         .then(m => {
-          console.log(m);
+          self.hot.loadData(setArr(m.data));
+          let newArr = [];
+          self.newRolList.forEach(item => {
+            newArr.push(item.name);
+          });
+          // rolsList  这里的。 newRolList
+          self.hot.updateSettings({
+            colHeaders: newArr
+          });
         });
     },
     // 初始化滚动条
@@ -444,7 +511,13 @@ export default {
         suppressScrollX: true
       });
     },
-
+    // 判断对象是否为空
+    isEmptyObject(obj) {
+      for (var n in obj) {
+        return false;
+      }
+      return true;
+    },
     // 投放区待选条删除1
     deleteIndexCol(item) {
       let _this = this;
@@ -629,6 +702,7 @@ export default {
       this.$confirm("确定还原此报表吗？自定义数据与操作都将丢失（保存报表之后生效）。", {
         callback: function(data) {
           if (data === "confirm") {
+            _this._loadData();
             _this.$message({
               type: "success",
               message: "还原成功!"
@@ -659,11 +733,18 @@ export default {
           manualColumnFreeze: true,
           autoColumnSize: true,
           // fixedRowsBottom: 2,
-          search: true, // 启用搜索
+          // search: true, // 启用搜索
           autoWrapRow: true, //自动换行
           copyPaste: true,
           customBorders: true,
           contextMenu: {
+            callback: function(key, options) {
+              if (key === "print") {
+                setTimeout(_ => {
+                  _this._dataVisual();
+                }, 0);
+              }
+            },
             items: {
               row_above: {
                 name: "在上面插入行"
@@ -686,6 +767,14 @@ export default {
               },
               make_read_only: {
                 name: "只读"
+              },
+              print: {
+                name: "数据可视化"
+                // disabled: function() {
+                //   // if first row, disable this option
+                //   alert(1);
+                //   // return hot3.getSelected()[0] === 0
+                // }
               },
               hsep2: "---------",
               mergeCells: {
@@ -727,10 +816,14 @@ export default {
     // 第一次载入数据
     _loadData() {
       let _this = this;
-      let m = JSON.parse(localStorage.getItem("tableData"));
-      if (!m) return false;
-      _this.TableCore = JSON.parse(localStorage.getItem("tableData"));
-
+      let m = (_this.TableCore = JSON.parse(localStorage.getItem("tableData")));
+      if (!m) {
+        _this.$router.push({
+          path: "/uploadData",
+          query: { PID: MathRound }
+        });
+        return false;
+      }
       // 设置表头
       _this.hot.updateSettings({
         colHeaders: m.schema.split(",")
@@ -739,11 +832,7 @@ export default {
       _this.dataVal = setArr(m.data);
       _this.hot.loadData(setArr(m.data));
 
-      // m.dimentions 维度 colsList
-      console.log(m);
-      console.log(m.dimensions);
-      // dimensions
-
+      // m.dimensions 维度 colsList
       try {
         _this.colsList = _this.__CreatObj(m.dimensions.split(","));
       } catch (e) {
@@ -773,7 +862,7 @@ export default {
           _this.endRow,
           _this.endCol
         );
-        let arr = _this.seleArr,
+        let arr = _this.seleArr || [],
           result = 0;
         // let a = _this.hot.colToProp(1);
         for (let i = 0, len = arr.length; i < len; i++) {
@@ -799,8 +888,8 @@ export default {
           _this.endRow,
           _this.endCol
         );
-        let ary = _this.seleArr;
-        let maxN = eval("Math.max(" + ary.join() + ")");
+        let arr = _this.seleArr;
+        let maxN = eval("Math.max(" + arr.join() + ")");
         this.GLOBALbase = `MAX=${maxN}`;
         // _this.flagOfsel = false;
       }
@@ -816,8 +905,8 @@ export default {
           _this.endRow,
           _this.endCol
         );
-        let ary = _this.seleArr;
-        let minN = eval("Math.min(" + ary.join() + ")");
+        let arr = _this.seleArr;
+        let minN = eval("Math.min(" + arr.join() + ")");
         this.GLOBALbase = `MIN=${minN}`;
         // _this.flagOfsel = false;
       }

@@ -13,8 +13,8 @@ import instance from './Ajax/$Http';
 import IPConfig from './Ajax/IPConfig'
 import Cookie from './assets/js/common/Cookie'
 import QS from 'qs';
-import ScrollBar from 'vue2-scrollbar';
-import './assets/css/vue2-scrollbar.css'
+// import ScrollBar from 'vue2-scrollbar';
+// import './assets/css/vue2-scrollbar.css'
 
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
@@ -25,7 +25,7 @@ Vue.prototype.QS = QS;
 Vue.prototype.URL = IPConfig;
 Vue.prototype.Cookie = Cookie;
 Vue.prototype.ID = Cookie('TOKEN');
-Vue.component('ScrollBar', ScrollBar);
+// Vue.component('ScrollBar', ScrollBar);
 
 
 new Vue({
