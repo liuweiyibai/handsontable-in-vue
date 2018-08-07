@@ -13,8 +13,7 @@ import instance from './Ajax/$Http';
 import IPConfig from './Ajax/IPConfig'
 import Cookie from './assets/js/common/Cookie'
 import QS from 'qs';
-// import ScrollBar from 'vue2-scrollbar'; import
-// './assets/css/vue2-scrollbar.css'import router from './router/index';
+import './assets/index.css';
 
 
 Vue.use(ElementUI);
@@ -36,11 +35,5 @@ new Vue({
   template: '<App/>',
   components: {
     App
-  },
-  mounted() {
-    // Vue.prototype.ID = this.Cookie('token');
-    if (!!this.ID) {
-      console.log('status sucessful!!');
-    }
   }
 });
